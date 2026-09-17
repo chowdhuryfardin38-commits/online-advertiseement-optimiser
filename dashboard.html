@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — AdOptimize Pro</title>
+  <meta name="description" content="Manage your advertising campaigns, track performance, and optimize your ad spend with AdOptimize Pro.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+  </div>
+
+  <div id="toast-container" role="status" aria-live="polite"></div>
+
+  <!-- Mobile sidebar toggle -->
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation">☰</button>
+
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+      <div class="sidebar-header">
+        <div class="sidebar-logo" aria-hidden="true">🚀</div>
+        <span class="sidebar-brand">AdOptimize Pro</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <button class="nav-item active" id="nav-overview" onclick="showSection('overview')" aria-current="page">
+          <span class="nav-icon" aria-hidden="true">📊</span>
+          <span class="nav-label">Overview</span>
+        </button>
+        <button class="nav-item" id="nav-campaigns" onclick="showSection('campaigns')">
+          <span class="nav-icon" aria-hidden="true">📢</span>
+          <span class="nav-label">Campaigns</span>
+        </button>
+
+        <div class="nav-section-label">Tools</div>
+        <button class="nav-item" id="nav-optimizer" onclick="showSection('optimizer')">
+          <span class="nav-icon" aria-hidden="true">💡</span>
+          <span class="nav-label">Optimizer</span>
+        </button>
+        <button class="nav-item" id="nav-budget" onclick="showSection('budget')">
+          <span class="nav-icon" aria-hidden="true">💰</span>
+          <span class="nav-label">Budget</span>
+        </button>
+        <button class="nav-item" id="nav-payments" onclick="showSection('payments')">
+          <span class="nav-icon" aria-hidden="true">💳</span>
+          <span class="nav-label">Payments</span>
+        </button>
+
+        <div class="nav-section-label">Account</div>
+        <button class="nav-item" id="nav-notifications" onclick="showSection('notifications')">
+          <span class="nav-icon" aria-hidden="true">🔔</span>
+          <span class="nav-label">Notifications</span>
+          <span class="nav-badge notif-count-badge" id="notifNavBadge" style="display:none;">0</span>
+        </button>
+        <button class="nav-item" id="nav-profile" onclick="showSection('profile')">
+          <span class="nav-icon" aria-hidden="true">👤</span>
+          <span class="nav-label">Profile</span>
+        </button>
+        <button class="nav-item" id="nav-support" onclick="showSection('support')">
+          <span class="nav-icon" aria-hidden="true">🎫</span>
+          <span class="nav-label">Support</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-mini" id="userMiniCard">
+          <div class="user-avatar" id="sidebarAvatar">?</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebarName">Loading...</div>
+            <div class="user-email" id="sidebarEmail">...</div>
+          </div>
+          <button onclick="logoutUser()" title="Sign Out" style="background:none;border:none;color:var(--text-muted);font-size:16px;cursor:pointer;padding:4px;" aria-label="Sign out">⏏</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="mainContent">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 class="topbar-title" id="topbarTitle">Overview</h1>
+          <div class="topbar-breadcrumb" id="topbarBreadcrumb">Home › Overview</div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-btn" onclick="showSection('notifications')" aria-label="Notifications">
+            🔔
+            <span class="notif-dot" id="notifDot" style="display:none;"></span>
+          </button>
+          <button class="topbar-btn" onclick="showSection('profile')" aria-label="Profile settings">⚙️</button>
+          <button class="btn btn-sm btn-primary" onclick="openCampaignModal()">+ New Campaign</button>
+          <button class="btn btn-sm btn-danger" onclick="logoutUser()" id="signOutBtn" aria-label="Sign out" title="Sign Out">⏏ Sign Out</button>
+        </div>
+      </header>
+
+      <!-- ═══════════════════════════════════════
+           SECTION: OVERVIEW
+      ═══════════════════════════════════════ -->
+      <section class="page-section" id="section-overview">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Dashboard Overview</h2>
+            <p class="section-sub">Your advertising performance at a glance</p>
+          </div>
+          <div class="flex gap-sm">
+            <select class="form-control" id="overviewPeriod" style="width:auto;padding:8px 14px;" onchange="renderOverview()" aria-label="Select time period">
+              <option value="7">Last 7 days</option>
+              <option value="30" selected>Last 30 days</option>
+              <option value="90">Last 90 days</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="stats-grid" id="overviewStats" role="group" aria-label="Key performance indicators">
+          <!-- Injected by JS -->
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid-2" style="margin-bottom:var(--space-xl);">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Impressions & Clicks</h3>
+              <span class="badge badge-primary">Live</span>
+            </div>
+            <div class="chart-container" style="height:220px;">
+              <canvas id="mainLineChart" aria-label="Impressions and clicks line chart"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Campaign Status</h3>
+            </div>
+            <div style="display:flex;align-items:center;gap:var(--space-xl);">
+              <div class="chart-container" style="height:160px;width:160px;flex-shrink:0;">
+                <canvas id="statusDonut" aria-label="Campaign status doughnut chart"></canvas>
+              </div>
+              <div id="donutLegend" style="flex:1;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Campaigns -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Recent Campaigns</h3>
+            <button class="btn btn-ghost btn-sm" onclick="showSection('campaigns')">View All</button>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table" id="recentCampaignTable" aria-label="Recent campaigns">
+              <thead>
+                <tr>
+                  <th>Campaign</th>
+                  <th>Status</th>
+                  <th>Impressions</th>
+                  <th>Clicks</th>
+                  <th>CTR</th>
+                  <th>Spent</th>
+                  <th>Budget</th>
+                </tr>
+              </thead>
+              <tbody id="recentCampaignBody">
+                <tr><td colspan="7" class="text-center text-muted" style="padding:32px;">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════
+           SECTION: CAMPAIGNS
+      ═══════════════════════════════════════ -->
+      <section class="page-section hidden" id="section-campaigns">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">My Campaigns</h2>
+            <p class="section-sub">Create and manage your advertising campaigns</p>
+          </div>
+          <div class="flex gap-sm">
+            <select class="form-control" id="campaignFilter" style="width:auto;padding:8px 14px;" onchange="renderCampaigns()" aria-label="Filter campaigns">
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="pending">Pending</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <button class="btn btn-primary" onclick="openCampaignModal()">+ New Campaign</button>
+          </div>
+        </div>
+        <div id="campaignsGrid" class="grid-2">
+          <!-- Injected by JS -->
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════
+           SECTION: OPTIMIZER
+      ═══════════════════════════════════════ -->
+      <section class="page-section hidden" id="section-optimizer">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">AI Optimizer 💡</h2>
+            <p class="section-sub">Smart suggestions to maximize your campaign performance</p>
+          </div>
+          <div>
+            <select class="form-control" id="optimizerCampaignSelect" style="width:auto;padding:8px 14px;" onchange="renderOptimizer()" aria-label="Select campaign to optimize">
+              <!-- filled by JS -->
+            </select>
+          </div>
+        </div>
+
+        <!-- Performance Score -->
+        <div class="card" id="performanceScore" style="margin-bottom:var(--space-xl);">
+          <!-- filled by JS -->
+        </div>
+
+        <div id="suggestionsContainer">
+          <!-- filled by JS -->
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════
+           SECTION: BUDGET
+      ═══════════════════════════════════════ -->
+      <section class="page-section hidden" id="section-budget">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Budget Management</h2>
+            <p class="section-sub">Monitor and control your advertising spend</p>
+          </div>
+          <button class="btn btn-primary" onclick="showSection('payments')">+ Add Funds</button>
+        </div>
+        <div id="budgetContent">
+          <!-- filled by JS -->
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════
+           SECTION: PAYMENTS
+      ═══════════════════════════════════════ -->
+      <section class="page-section hidden" id="section-payments">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Payment Center</h2>
+            <p class="section-sub">Securely add funds to your advertising account</p>
+          </div>
+        </div>
+        <div class="grid-2" style="align-items:start;">
+          <!-- Payment Form -->
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom:var(--space-lg);">💳 Add Payment Method</h3>
+            <div class="payment-card-preview" id="cardPreview">
+              <div class="card-chip"></div>
+              <div class="card-number-preview" id="cardNumPreview">•••• •••• •••• ••••</div>
+              <div class="card-details-preview">
+                <div>
+                  <div style="font-size:10px;opacity:0.6;">CARD HOLDER</div>
+                  <div id="cardHolderPreview">YOUR NAME</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:10px;opacity:0.6;">EXPIRES</div>
+                  <div id="cardExpiryPreview">MM/YY</div>
+                </div>
+              </div>
+            </div>
+
+            <form id="paymentForm" novalidate>
+              <div class="form-group">
+                <label class="form-label" for="cardHolder">Cardholder Name</label>
+                <input class="form-control" type="text" id="cardHolder" placeholder="Jane Smith" oninput="updateCardPreview()">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="cardNumber">Card Number</label>
+                <input class="form-control" type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this); updateCardPreview()">
+              </div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="cardExpiry">Expiry Date</label>
+                  <input class="form-control" type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this); updateCardPreview()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="cardCVV">CVV</label>
+                  <input class="form-control" type="text" id="cardCVV" placeholder="123" maxlength="3">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="payAmount">Amount to Add</label>
+                <div class="input-with-icon">
+                  <span class="input-icon">$</span>
+                  <input class="form-control" type="number" id="payAmount" placeholder="0.00" min="10" style="padding-left:28px;">
+                </div>
+              </div>
+
+              <!-- Quick amounts -->
+              <div class="flex gap-sm" style="margin-bottom:var(--space-md);flex-wrap:wrap;">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="setAmount(100)">$100</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="setAmount(250)">$250</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="setAmount(500)">$500</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="setAmount(1000)">$1,000</button>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-full btn-lg" id="paySubmitBtn">🔒 Process Payment</button>
+              <p class="text-sm text-muted text-center" style="margin-top:var(--space-sm);">256-bit SSL encrypted · Funds added instantly</p>
+            </form>
+          </div>
+
+          <!-- Transaction History -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Transaction History</h3>
+            </div>
+            <div id="transactionList">
+              <!-- filled by JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════
+           SECTION: NOTIFICATIONS
+      ═══════════════════════════════════════ -->
+      <section class="page-section hidden" id="section-notifications">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Notifications</h2>
+            <p class="section-sub">Stay updated on your campaign performance</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="markAllRead()" id="markAllReadBtn">Mark All Read</button>
+        </div>
+        <div class="card" style="padding:0;">
+          <div id="notificationList">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════
+           SECTION: PROFILE
+      ═══════════════════════════════════════ -->
+      <section class="page-section hidden" id="section-profile">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Profile Settings</h2>
+            <p class="section-sub">Manage your personal information and security</p>
+          </div>
+        </div>
+        <div class="grid-2" style="align-items:start;">
+          <!-- Personal Info -->
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom:var(--space-lg);">👤 Personal Information</h3>
+            <form id="profileForm">
+              <div class="form-group">
+                <label class="form-label" for="prof-name">Full Name</label>
+                <input class="form-control" type="text" id="prof-name">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="prof-email">Email Address</label>
+                <input class="form-control" type="email" id="prof-email">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="prof-company">Company Name</label>
+                <input class="form-control" type="text" id="prof-company">
+              </div>
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+          </div>
+
+          <!-- Password Change -->
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom:var(--space-lg);">🔐 Change Password</h3>
+            <form id="passwordForm">
+              <div class="form-group">
+                <label class="form-label" for="cur-pass">Current Password</label>
+                <input class="form-control" type="password" id="cur-pass" placeholder="Current password">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="new-pass">New Password</label>
+                <input class="form-control" type="password" id="new-pass" placeholder="Minimum 6 characters">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="conf-pass">Confirm New Password</label>
+                <input class="form-control" type="password" id="conf-pass" placeholder="Repeat new password">
+              </div>
+              <button type="submit" class="btn btn-primary">Update Password</button>
+            </form>
+
+            <hr class="divider">
+            <h3 class="card-title" style="margin-bottom:var(--space-md);">⚡ Account Stats</h3>
+            <div id="profileStats"><!-- filled by JS --></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════
+           SECTION: SUPPORT
+      ═══════════════════════════════════════ -->
+      <section class="page-section hidden" id="section-support">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Support & Feedback</h2>
+            <p class="section-sub">Submit a request or track your support tickets</p>
+          </div>
+        </div>
+        <div class="grid-2" style="align-items:start;">
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom:var(--space-lg);">🎫 New Support Ticket</h3>
+            <form id="supportForm">
+              <div class="form-group">
+                <label class="form-label" for="ticketSubject">Subject</label>
+                <input class="form-control" type="text" id="ticketSubject" placeholder="Briefly describe your issue">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="ticketPriority">Priority</label>
+                <select class="form-control" id="ticketPriority">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="ticketMessage">Message</label>
+                <textarea class="form-control" id="ticketMessage" rows="5" placeholder="Describe your issue in detail..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit Ticket</button>
+            </form>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">My Tickets</h3>
+            </div>
+            <div id="myTicketsList"><!-- filled by JS --></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       CAMPAIGN MODAL
+  ═══════════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="campaignModal" role="dialog" aria-modal="true" aria-labelledby="campaignModalTitle">
+    <div class="modal" style="max-width:640px;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="campaignModalTitle">Create Campaign</h2>
+        <button class="modal-close" onclick="closeCampaignModal()" aria-label="Close">✕</button>
+      </div>
+      <form id="campaignForm">
+        <div class="form-group">
+          <label class="form-label" for="camp-title">Campaign Title *</label>
+          <input class="form-control" type="text" id="camp-title" placeholder="e.g. Summer Sale 2024" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="camp-desc">Description *</label>
+          <textarea class="form-control" id="camp-desc" rows="3" placeholder="Describe your campaign goals..." required></textarea>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="camp-audience">Target Audience *</label>
+            <select class="form-control" id="camp-audience" required>
+              <option value="">Select audience</option>
+              <option value="millennials">Millennials (18–34)</option>
+              <option value="gen-z">Gen Z (13–24)</option>
+              <option value="tech-enthusiasts">Tech Enthusiasts</option>
+              <option value="families">Families</option>
+              <option value="professionals">Professionals</option>
+              <option value="seniors">Seniors (50+)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="camp-type">Ad Format</label>
+            <select class="form-control" id="camp-type">
+              <option value="image">Image Ad</option>
+              <option value="video">Video Ad</option>
+              <option value="text">Text Ad</option>
+              <option value="carousel">Carousel Ad</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="camp-budget">Total Budget ($) *</label>
+            <input class="form-control" type="number" id="camp-budget" placeholder="500" min="50" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="camp-daily">Daily Budget ($)</label>
+            <input class="form-control" type="number" id="camp-daily" placeholder="50" min="5">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="camp-start">Start Date *</label>
+            <input class="form-control" type="date" id="camp-start" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="camp-end">End Date *</label>
+            <input class="form-control" type="date" id="camp-end" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="camp-keywords">Keywords (comma-separated)</label>
+          <input class="form-control" type="text" id="camp-keywords" placeholder="summer, sale, fashion, deals">
+        </div>
+        <div class="flex gap-md" style="margin-top:var(--space-md);">
+          <button type="button" class="btn btn-ghost" onclick="closeCampaignModal()" style="flex:1;">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="flex:2;" id="campaignSubmitBtn">🚀 Submit Campaign</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Campaign Detail Modal -->
+  <div class="modal-overlay hidden" id="campaignDetailModal" role="dialog" aria-modal="true" aria-labelledby="campDetailTitle">
+    <div class="modal" style="max-width:640px;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="campDetailTitle">Campaign Details</h2>
+        <button class="modal-close" onclick="document.getElementById('campaignDetailModal').classList.add('hidden')" aria-label="Close">✕</button>
+      </div>
+      <div id="campaignDetailContent"><!-- filled by JS --></div>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/optimizer.js"></script>
+  <script>
+    initDB();
+    const session = requireAuth('advertiser');
+    if (!session) throw new Error('Not authenticated');
+
+    let currentUser = getUserById(session.userId);
+    let currentSection = 'overview';
+
+    // ─── INIT ───────────────────────────────
+    function init() {
+      currentUser = getUserById(session.userId);
+      // Sidebar user info
+      document.getElementById('sidebarAvatar').textContent = currentUser.avatar || currentUser.name[0];
+      document.getElementById('sidebarName').textContent   = currentUser.name;
+      document.getElementById('sidebarEmail').textContent  = currentUser.email;
+      // Notification badge
+      updateNotifBadge(currentUser.id);
+      // Default section
+      renderOverview();
+    }
+
+    // ─── NAVIGATION ─────────────────────────
+    function showSection(name) {
+      document.querySelectorAll('.page-section').forEach(s => s.classList.add('hidden'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('section-' + name).classList.remove('hidden');
+      const navBtn = document.getElementById('nav-' + name);
+      if (navBtn) { navBtn.classList.add('active'); navBtn.setAttribute('aria-current','page'); }
+
+      const titles = {
+        overview: 'Overview', campaigns: 'My Campaigns', optimizer: 'AI Optimizer',
+        budget: 'Budget', payments: 'Payments', notifications: 'Notifications',
+        profile: 'Profile', support: 'Support'
+      };
+      document.getElementById('topbarTitle').textContent = titles[name] || name;
+      document.getElementById('topbarBreadcrumb').textContent = 'Home › ' + (titles[name] || name);
+      currentSection = name;
+
+      // Render section
+      const renderers = {
+        overview: renderOverview, campaigns: renderCampaigns,
+        optimizer: renderOptimizer, budget: renderBudget,
+        payments: renderPayments, notifications: renderNotifications,
+        profile: renderProfile, support: renderSupport
+      };
+      if (renderers[name]) renderers[name]();
+
+      // Close sidebar on mobile
+      if (window.innerWidth <= 1024) {
+        document.getElementById('sidebar').classList.remove('open');
+      }
+    }
+
+    // ─── OVERVIEW ───────────────────────────
+    function renderOverview() {
+      currentUser = getUserById(session.userId);
+      const campaigns = getUserCampaigns(session.userId);
+      const totalImpressions = campaigns.reduce((a,c) => a + (c.impressions||0), 0);
+      const totalClicks      = campaigns.reduce((a,c) => a + (c.clicks||0), 0);
+      const totalConversions = campaigns.reduce((a,c) => a + (c.conversions||0), 0);
+      const totalSpent       = campaigns.reduce((a,c) => a + (c.spent||0), 0);
+      const avgCTR           = totalImpressions ? ((totalClicks/totalImpressions)*100).toFixed(2) : 0;
+
+      const statsGrid = document.getElementById('overviewStats');
+      statsGrid.innerHTML = `
+        ${statCard('🎯', 'Total Impressions', formatNum(totalImpressions), '+12.4%', 'up', '#6c63ff')}
+        ${statCard('👆', 'Total Clicks', formatNum(totalClicks), '+8.7%', 'up', '#00d4ff')}
+        ${statCard('📈', 'Avg CTR', avgCTR + '%', '+0.3%', 'up', '#22d3a5')}
+        ${statCard('💸', 'Total Spent', formatMoney(totalSpent), '-2.1%', 'down', '#f59e0b')}
+      `;
+
+      // Recent campaigns table
+      const tbody = document.getElementById('recentCampaignBody');
+      if (!campaigns.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted" style="padding:32px;">No campaigns yet. <button onclick="openCampaignModal()" class="btn btn-sm btn-primary" style="margin-left:8px;">Create one →</button></td></tr>';
+      } else {
+        tbody.innerHTML = campaigns.slice(0,5).map(c => {
+          const ctr = c.impressions ? ((c.clicks/c.impressions)*100).toFixed(2) : '0.00';
+          return `<tr>
+            <td><strong>${c.title}</strong><div class="text-sm text-muted">${c.adType || 'image'}</div></td>
+            <td><span class="badge badge-${statusBadgeClass(c.status)}">${statusDot(c.status)} ${c.status}</span></td>
+            <td>${formatNum(c.impressions)}</td>
+            <td>${formatNum(c.clicks)}</td>
+            <td>${ctr}%</td>
+            <td>${formatMoney(c.spent)}</td>
+            <td>
+              <div class="progress-bar-wrap" style="width:80px;display:inline-block;">
+                <div class="progress-bar" style="width:${Math.min(100,(c.spent/c.budget)*100).toFixed(0)}%;background:${c.spent/c.budget > 0.8 ? 'var(--danger)' : 'var(--grad-primary)'}"></div>
+              </div>
+              <span class="text-sm text-muted" style="margin-left:6px;">${formatMoney(c.budget)}</span>
+            </td>
+          </tr>`;
+        }).join('');
+      }
+
+      // Charts (defer to next frame for accurate size)
+      setTimeout(() => {
+        const months   = lastNMonths(7);
+        const canvas1  = document.getElementById('mainLineChart');
+        const imprData = generateTrend(8000, 7, 0.3, true);
+        const clickData= generateTrend(400,  7, 0.25, true);
+        drawLineChart(canvas1, months, [
+          { label: 'Impressions', data: imprData, color: '#6c63ff' },
+          { label: 'Clicks',      data: clickData, color: '#00d4ff' }
+        ], { formatY: formatNum });
+
+        // Donut
+        const active   = campaigns.filter(c=>c.status==='active').length;
+        const pending  = campaigns.filter(c=>c.status==='pending').length;
+        const rejected = campaigns.filter(c=>c.status==='rejected').length;
+        const canvas2  = document.getElementById('statusDonut');
+        drawDoughnutChart(canvas2, ['Active','Pending','Rejected'],
+          [active||1, pending, rejected],
+          ['#22d3a5','#f59e0b','#f43f5e'],
+          { centerText: campaigns.length, centerLabel: 'Total' }
+        );
+        document.getElementById('donutLegend').innerHTML = `
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            ${legendItem('Active', active, '#22d3a5')}
+            ${legendItem('Pending', pending, '#f59e0b')}
+            ${legendItem('Rejected', rejected, '#f43f5e')}
+          </div>`;
+      }, 100);
+    }
+
+    function legendItem(label, count, color) {
+      return `<div style="display:flex;align-items:center;gap:8px;">
+        <span style="width:12px;height:12px;border-radius:3px;background:${color};flex-shrink:0;"></span>
+        <span style="color:var(--text-secondary);font-size:13px;">${label}</span>
+        <span style="margin-left:auto;font-weight:700;font-size:13px;">${count}</span>
+      </div>`;
+    }
+
+    function statCard(icon, label, value, change, dir, color) {
+      return `<div class="stat-card">
+        <div class="stat-icon" style="background:${color}22;">${icon}</div>
+        <div class="stat-value">${value}</div>
+        <div class="stat-label">${label}</div>
+        <div class="stat-change ${dir}">
+          ${dir === 'up' ? '↑' : '↓'} ${change} vs last period
+        </div>
+      </div>`;
+    }
+
+    // ─── CAMPAIGNS ──────────────────────────
+    function renderCampaigns() {
+      const filter = document.getElementById('campaignFilter').value;
+      let campaigns = getUserCampaigns(session.userId);
+      if (filter !== 'all') campaigns = campaigns.filter(c => c.status === filter);
+
+      const grid = document.getElementById('campaignsGrid');
+      if (!campaigns.length) {
+        grid.innerHTML = `<div class="card text-center" style="grid-column:1/-1;padding:48px;">
+          <div style="font-size:48px;margin-bottom:var(--space-md);">📢</div>
+          <h3 style="margin-bottom:8px;">No campaigns found</h3>
+          <p class="text-muted" style="margin-bottom:var(--space-lg);">${filter !== 'all' ? 'No '+filter+' campaigns.' : 'Start your first campaign today!'}</p>
+          <button class="btn btn-primary" onclick="openCampaignModal()">+ Create Campaign</button>
+        </div>`;
+        return;
+      }
+
+      grid.innerHTML = campaigns.map(c => {
+        const ctr = c.impressions ? ((c.clicks/c.impressions)*100).toFixed(2) : '0.00';
+        const pct = Math.min(100, Math.round((c.spent/c.budget)*100));
+        const budgetColor = pct > 80 ? 'var(--danger)' : pct > 60 ? 'var(--warning)' : 'var(--grad-primary)';
+        const emoji = c.adType === 'video' ? '🎬' : c.adType === 'text' ? '📝' : c.adType === 'carousel' ? '🎠' : '🖼️';
+
+        return `<div class="campaign-card">
+          <div class="campaign-card-top">
+            <div class="campaign-thumb">${emoji}</div>
+            <div class="campaign-info">
+              <div class="campaign-title">${c.title}</div>
+              <div class="campaign-meta">${c.audience} • ${formatDate(c.startDate)} – ${formatDate(c.endDate)}</div>
+            </div>
+            <span class="badge badge-${statusBadgeClass(c.status)}">${c.status}</span>
+          </div>
+          <div class="campaign-metrics">
+            <div class="campaign-metric">
+              <div class="campaign-metric-val">${formatNum(c.impressions)}</div>
+              <div class="campaign-metric-lbl">Impressions</div>
+            </div>
+            <div class="campaign-metric">
+              <div class="campaign-metric-val">${formatNum(c.clicks)}</div>
+              <div class="campaign-metric-lbl">Clicks</div>
+            </div>
+            <div class="campaign-metric">
+              <div class="campaign-metric-val">${ctr}%</div>
+              <div class="campaign-metric-lbl">CTR</div>
+            </div>
+          </div>
+          <div class="campaign-progress-label">
+            <span>Budget Used: ${formatMoney(c.spent)} / ${formatMoney(c.budget)}</span>
+            <span>${pct}%</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" style="width:${pct}%;background:${budgetColor}"></div>
+          </div>
+          <div class="campaign-actions">
+            <button class="btn btn-ghost btn-sm" onclick="viewCampaign('${c.id}')">📋 Details</button>
+            <button class="btn btn-ghost btn-sm" onclick="optimizeCampaign('${c.id}')">💡 Optimize</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteCampaignUI('${c.id}')">🗑</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function viewCampaign(id) {
+      const c = getCampaignById(id);
+      if (!c) return;
+      const ctr = c.impressions ? ((c.clicks/c.impressions)*100).toFixed(2) : '0.00';
+      document.getElementById('campDetailTitle').textContent = c.title;
+      document.getElementById('campaignDetailContent').innerHTML = `
+        <div class="grid-2" style="margin-bottom:var(--space-lg);">
+          ${miniStat('Impressions', formatNum(c.impressions))}
+          ${miniStat('Clicks', formatNum(c.clicks))}
+          ${miniStat('CTR', ctr+'%')}
+          ${miniStat('Conversions', c.conversions)}
+        </div>
+        <div class="form-group"><span class="form-label">Description</span>
+          <p class="text-muted" style="margin-top:4px;">${c.description}</p></div>
+        <div class="grid-2">
+          <div class="form-group"><span class="form-label">Audience</span><p>${c.audience}</p></div>
+          <div class="form-group"><span class="form-label">Ad Type</span><p>${c.adType}</p></div>
+          <div class="form-group"><span class="form-label">Start Date</span><p>${formatDate(c.startDate)}</p></div>
+          <div class="form-group"><span class="form-label">End Date</span><p>${formatDate(c.endDate)}</p></div>
+          <div class="form-group"><span class="form-label">Total Budget</span><p>${formatMoney(c.budget)}</p></div>
+          <div class="form-group"><span class="form-label">Daily Budget</span><p>${formatMoney(c.dailyBudget)}</p></div>
+        </div>
+        ${c.keywords && c.keywords.length ? `<div class="form-group"><span class="form-label">Keywords</span>
+          <div class="flex gap-sm" style="flex-wrap:wrap;margin-top:6px;">
+            ${c.keywords.map(k=>`<span class="badge badge-primary">${k}</span>`).join('')}
+          </div></div>` : ''}
+        <div style="margin-top:var(--space-lg);">
+          <div class="form-label" style="margin-bottom:8px;">Budget Progress</div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" style="width:${Math.min(100,(c.spent/c.budget)*100).toFixed(0)}%"></div>
+          </div>
+          <div class="flex justify-between text-sm text-muted" style="margin-top:4px;">
+            <span>Spent: ${formatMoney(c.spent)}</span><span>Remaining: ${formatMoney(c.budget - c.spent)}</span>
+          </div>
+        </div>`;
+      document.getElementById('campaignDetailModal').classList.remove('hidden');
+    }
+
+    function miniStat(label, val) {
+      return `<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-md);text-align:center;">
+        <div style="font-family:Outfit;font-size:24px;font-weight:800;">${val}</div>
+        <div style="font-size:12px;color:var(--text-secondary);">${label}</div>
+      </div>`;
+    }
+
+    function optimizeCampaign(id) {
+      document.getElementById('optimizerCampaignSelect').value = id;
+      showSection('optimizer');
+    }
+
+    function deleteCampaignUI(id) {
+      if (!confirm('Delete this campaign? This action cannot be undone.')) return;
+      deleteCampaign(id);
+      renderCampaigns();
+      showToast('Campaign deleted.', 'info');
+    }
+
+    // ─── CAMPAIGN MODAL ──────────────────────
+    function openCampaignModal(editId = null) {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('camp-start').value = today;
+      document.getElementById('campaignModal').classList.remove('hidden');
+    }
+
+    function closeCampaignModal() {
+      document.getElementById('campaignModal').classList.add('hidden');
+      document.getElementById('campaignForm').reset();
+    }
+
+    document.getElementById('campaignForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const title    = document.getElementById('camp-title').value.trim();
+      const desc     = document.getElementById('camp-desc').value.trim();
+      const audience = document.getElementById('camp-audience').value;
+      const type     = document.getElementById('camp-type').value;
+      const budget   = parseFloat(document.getElementById('camp-budget').value);
+      const daily    = parseFloat(document.getElementById('camp-daily').value) || budget/30;
+      const start    = document.getElementById('camp-start').value;
+      const end      = document.getElementById('camp-end').value;
+      const kwStr    = document.getElementById('camp-keywords').value;
+
+      if (!title || !desc || !audience || !budget || !start || !end) {
+        showToast('Please fill in all required fields.', 'warning'); return;
+      }
+      if (new Date(end) <= new Date(start)) {
+        showToast('End date must be after start date.', 'error'); return;
+      }
+
+      const campaign = {
+        id: genId('camp'), userId: session.userId, title, description: desc,
+        status: 'pending', audience, adType: type,
+        budget, dailyBudget: daily, spent: 0,
+        startDate: start, endDate: end,
+        impressions: 0, clicks: 0, conversions: 0,
+        image: null, createdAt: new Date().toISOString(),
+        keywords: kwStr ? kwStr.split(',').map(k=>k.trim()).filter(Boolean) : []
+      };
+
+      addCampaign(campaign);
+      pushNotification(session.userId, 'pending', 'Campaign Submitted',
+        `"${title}" has been submitted for admin review.`);
+      closeCampaignModal();
+      showToast('Campaign submitted for review!', 'success');
+      if (currentSection === 'campaigns') renderCampaigns();
+      else showSection('campaigns');
+    });
+
+    // ─── OPTIMIZER ──────────────────────────
+    function renderOptimizer() {
+      const campaigns = getUserCampaigns(session.userId).filter(c=>c.status==='active');
+      const sel = document.getElementById('optimizerCampaignSelect');
+
+      sel.innerHTML = campaigns.length
+        ? campaigns.map(c=>`<option value="${c.id}">${c.title}</option>`).join('')
+        : '<option value="">No active campaigns</option>';
+
+      if (!campaigns.length) {
+        document.getElementById('performanceScore').innerHTML = '<p class="text-muted text-center" style="padding:var(--space-lg);">Create and activate a campaign to see optimization suggestions.</p>';
+        document.getElementById('suggestionsContainer').innerHTML = '';
+        return;
+      }
+
+      const campId   = sel.value || campaigns[0].id;
+      const campaign = getCampaignById(campId);
+      if (!campaign) return;
+
+      const ctr = campaign.impressions ? ((campaign.clicks/campaign.impressions)*100).toFixed(2) : 0;
+      const score = Math.min(100, Math.round(40 + parseFloat(ctr)*10 + (campaign.conversions/10)));
+
+      document.getElementById('performanceScore').innerHTML = `
+        <div class="flex items-center gap-lg" style="flex-wrap:wrap;">
+          <div style="text-align:center;flex-shrink:0;">
+            <div style="font-family:Outfit;font-size:56px;font-weight:800;background:var(--grad-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">${score}</div>
+            <div class="text-muted text-sm">Performance Score</div>
+          </div>
+          <div style="flex:1;">
+            <div class="progress-bar-wrap" style="height:12px;margin-bottom:8px;">
+              <div class="progress-bar" style="width:${score}%"></div>
+            </div>
+            <div class="grid-3" style="margin-top:var(--space-md);">
+              <div><div style="font-size:20px;font-weight:700;">${formatNum(campaign.impressions)}</div><div class="text-muted text-sm">Impressions</div></div>
+              <div><div style="font-size:20px;font-weight:700;">${ctr}%</div><div class="text-muted text-sm">CTR</div></div>
+              <div><div style="font-size:20px;font-weight:700;">${campaign.conversions}</div><div class="text-muted text-sm">Conversions</div></div>
+            </div>
+          </div>
+        </div>`;
+
+      const suggestions = generateOptimizationSuggestions(campaign);
+      document.getElementById('suggestionsContainer').innerHTML = suggestions.map(s => `
+        <div class="suggestion-card" style="margin-bottom:var(--space-md);">
+          <div style="display:flex;align-items:center;gap:var(--space-md);margin-bottom:var(--space-md);">
+            <span style="font-size:28px;">${s.icon}</span>
+            <div style="flex:1;">
+              <div style="font-weight:700;font-size:16px;">${s.title}</div>
+              <div class="text-muted text-sm">${s.desc}</div>
+            </div>
+            <span class="suggestion-score ${s.score}">${s.scoreLabel}</span>
+          </div>
+          <ul style="list-style:none;padding:0;margin-bottom:var(--space-md);">
+            ${s.items.map(i=>`<li style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;font-size:13px;">
+              <span style="color:var(--success);">✓</span>${i}</li>`).join('')}
+          </ul>
+          <button class="btn btn-primary btn-sm" onclick="applyOptimization('${s.type}','${campaign.id}')">${s.action}</button>
+        </div>`).join('');
+    }
+
+    function applyOptimization(type, campId) {
+      showToast(`Optimization applied: ${type} update queued!`, 'success');
+    }
+
+    // ─── BUDGET ──────────────────────────────
+    function renderBudget() {
+      currentUser = getUserById(session.userId);
+      const campaigns = getUserCampaigns(session.userId);
+      const totalBudget  = campaigns.reduce((a,c) => a + c.budget, 0);
+      const totalSpent   = campaigns.reduce((a,c) => a + c.spent, 0);
+      const remaining    = totalBudget - totalSpent;
+      const pct          = totalBudget ? Math.round((totalSpent/totalBudget)*100) : 0;
+
+      document.getElementById('budgetContent').innerHTML = `
+        <div class="grid-3" style="margin-bottom:var(--space-xl);">
+          ${statCard('💰','Total Budgeted', formatMoney(totalBudget), '', '', '#6c63ff')}
+          ${statCard('💸','Total Spent', formatMoney(totalSpent), '', '', '#f43f5e')}
+          ${statCard('💚','Remaining', formatMoney(remaining), '', '', '#22d3a5')}
+        </div>
+        <div class="grid-2" style="margin-bottom:var(--space-xl);align-items:start;">
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom:var(--space-lg);">Overall Budget Usage</h3>
+            <div style="margin-bottom:var(--space-md);">
+              <div class="progress-bar-wrap" style="height:16px;">
+                <div class="progress-bar" style="width:${pct}%;background:${pct>80?'var(--danger)':pct>60?'var(--warning)':'var(--grad-primary)'}"></div>
+              </div>
+              <div class="flex justify-between text-sm text-muted" style="margin-top:8px;">
+                <span>Spent: ${formatMoney(totalSpent)}</span>
+                <span>${pct}% used</span>
+                <span>Total: ${formatMoney(totalBudget)}</span>
+              </div>
+            </div>
+            ${pct > 80 ? '<div class="badge badge-danger" style="font-size:12px;padding:8px 14px;margin-top:8px;">⚠️ High spend alert — consider adding more funds</div>' : ''}
+            <div class="chart-container" style="height:200px;margin-top:var(--space-lg);">
+              <canvas id="budgetChart"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom:var(--space-lg);">Campaign Breakdown</h3>
+            ${campaigns.map(c => {
+              const cp = c.budget ? Math.round((c.spent/c.budget)*100) : 0;
+              return `<div style="margin-bottom:var(--space-md);">
+                <div class="flex justify-between text-sm" style="margin-bottom:4px;">
+                  <span class="font-bold">${c.title}</span>
+                  <span class="text-muted">${formatMoney(c.spent)} / ${formatMoney(c.budget)}</span>
+                </div>
+                <div class="progress-bar-wrap">
+                  <div class="progress-bar" style="width:${cp}%;background:${cp>80?'var(--danger)':cp>60?'var(--warning)':'var(--grad-primary)'}"></div>
+                </div>
+                <div class="flex justify-between text-sm text-muted" style="margin-top:2px;">
+                  <span><span class="badge badge-${statusBadgeClass(c.status)}">${c.status}</span></span>
+                  <span>${cp}%</span>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+
+      setTimeout(() => {
+        const months = lastNMonths(6);
+        drawBarChart(document.getElementById('budgetChart'), months,
+          [{ data: generateTrend(500, 6, 0.2, false), color: '#6c63ff' }],
+          { formatY: v => '$' + Math.round(v) });
+      }, 100);
+    }
+
+    // ─── PAYMENTS ────────────────────────────
+    function renderPayments() {
+      const payments = getUserPayments(session.userId);
+      const list = document.getElementById('transactionList');
+      if (!payments.length) {
+        list.innerHTML = '<p class="text-muted text-center" style="padding:var(--space-xl);">No transactions yet.</p>';
+        return;
+      }
+      list.innerHTML = payments.map(p => `
+        <div style="display:flex;align-items:center;gap:var(--space-md);padding:var(--space-md) 0;border-bottom:1px solid var(--border);">
+          <div style="width:40px;height:40px;border-radius:50%;background:rgba(34,211,165,0.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💳</div>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:14px;">${p.description}</div>
+            <div class="text-sm text-muted">${p.method} · ${formatDate(p.createdAt)}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-weight:700;color:var(--success);">+${formatMoney(p.amount)}</div>
+            <span class="badge badge-success">${p.status}</span>
+          </div>
+        </div>`).join('');
+    }
+
+    // Payment card preview
+    function updateCardPreview() {
+      const num    = document.getElementById('cardNumber').value.replace(/\D/g,'');
+      const holder = document.getElementById('cardHolder').value || 'YOUR NAME';
+      const expiry = document.getElementById('cardExpiry').value || 'MM/YY';
+      const preview= num ? (num + '0000000000000000').slice(0,16).replace(/(.{4})/g,'$1 ').trim() : '•••• •••• •••• ••••';
+      document.getElementById('cardNumPreview').textContent   = preview;
+      document.getElementById('cardHolderPreview').textContent= holder.toUpperCase();
+      document.getElementById('cardExpiryPreview').textContent = expiry;
+    }
+
+    function formatCardNumber(input) {
+      let val = input.value.replace(/\D/g,'').slice(0,16);
+      input.value = val.replace(/(.{4})/g,'$1 ').trim();
+    }
+
+    function formatExpiry(input) {
+      let val = input.value.replace(/\D/g,'');
+      if (val.length >= 3) val = val.slice(0,2) + '/' + val.slice(2,4);
+      input.value = val;
+    }
+
+    function setAmount(n) { document.getElementById('payAmount').value = n; }
+
+    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const amount  = parseFloat(document.getElementById('payAmount').value);
+      const holder  = document.getElementById('cardHolder').value.trim();
+      const cardNum = document.getElementById('cardNumber').value.replace(/\s/g,'');
+      const expiry  = document.getElementById('cardExpiry').value;
+      const cvv     = document.getElementById('cardCVV').value;
+
+      if (!holder || cardNum.length < 16 || !expiry || cvv.length < 3) {
+        showToast('Please fill in all card details.', 'warning'); return;
+      }
+      if (!amount || amount < 10) {
+        showToast('Minimum payment amount is $10.', 'warning'); return;
+      }
+
+      const btn = document.getElementById('paySubmitBtn');
+      btn.disabled = true; btn.textContent = '⏳ Processing...';
+
+      setTimeout(() => {
+        const payment = {
+          id: genId('pay'), userId: session.userId, amount,
+          method: 'Visa ****' + cardNum.slice(-4),
+          status: 'completed', description: 'Account top-up',
+          createdAt: new Date().toISOString()
+        };
+        addPayment(payment);
+        pushNotification(session.userId, 'success', 'Payment Successful', `${formatMoney(amount)} added to your account.`);
+        showToast(`${formatMoney(amount)} added successfully!`, 'success');
+        document.getElementById('paymentForm').reset();
+        updateCardPreview();
+        renderPayments();
+        btn.disabled = false; btn.textContent = '🔒 Process Payment';
+      }, 1500);
+    });
+
+    // ─── NOTIFICATIONS ───────────────────────
+    function renderNotifications() {
+      const notifs = getUserNotifications(session.userId);
+      const list = document.getElementById('notificationList');
+
+      if (!notifs.length) {
+        list.innerHTML = '<p class="text-muted text-center" style="padding:48px;">No notifications yet.</p>';
+        return;
+      }
+
+      const icons = { success:'✅', warning:'⚠️', info:'ℹ️', error:'❌', pending:'🕐' };
+      const colors= { success:'rgba(34,211,165,0.15)', warning:'rgba(245,158,11,0.15)', info:'rgba(56,189,248,0.15)', error:'rgba(244,63,94,0.15)', pending:'rgba(245,158,11,0.15)' };
+
+      list.innerHTML = notifs.map(n => `
+        <div class="notification-item ${n.read ? '' : 'unread'}" onclick="markNotificationRead('${n.id}');this.classList.remove('unread');">
+          <div class="notif-icon-wrap" style="background:${colors[n.type]||colors.info};">${icons[n.type]||'ℹ️'}</div>
+          <div class="notif-body">
+            <div class="notif-title">${n.title}</div>
+            <div class="notif-desc">${n.message}</div>
+            <div class="notif-time">${timeAgo(n.createdAt)}</div>
+          </div>
+          ${!n.read ? '<span style="width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0;"></span>' : ''}
+        </div>`).join('');
+    }
+
+    function markAllRead() {
+      markAllNotificationsRead(session.userId);
+      renderNotifications();
+      updateNotifBadge(session.userId);
+      showToast('All notifications marked as read.', 'success');
+    }
+
+    // ─── PROFILE ─────────────────────────────
+    function renderProfile() {
+      currentUser = getUserById(session.userId);
+      document.getElementById('prof-name').value    = currentUser.name;
+      document.getElementById('prof-email').value   = currentUser.email;
+      document.getElementById('prof-company').value = currentUser.company || '';
+
+      const campaigns  = getUserCampaigns(session.userId);
+      const totalSpent = campaigns.reduce((a,c) => a + c.spent, 0);
+      document.getElementById('profileStats').innerHTML = `
+        <div class="grid-2">
+          ${miniStat('Member Since', new Date(currentUser.createdAt).getFullYear())}
+          ${miniStat('Total Campaigns', campaigns.length)}
+          ${miniStat('Active Campaigns', campaigns.filter(c=>c.status==='active').length)}
+          ${miniStat('Total Ad Spend', formatMoney(totalSpent))}
+        </div>`;
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name    = document.getElementById('prof-name').value.trim();
+      const email   = document.getElementById('prof-email').value.trim();
+      const company = document.getElementById('prof-company').value.trim();
+      if (!name || !email) { showToast('Name and email are required.', 'warning'); return; }
+
+      const result = updateProfile(session.userId, { name, email, company, avatar: name[0].toUpperCase() });
+      if (result.success) {
+        showToast('Profile updated successfully!', 'success');
+        document.getElementById('sidebarName').textContent  = name;
+        document.getElementById('sidebarAvatar').textContent= name[0].toUpperCase();
+        currentUser = getUserById(session.userId);
+      } else {
+        showToast(result.message, 'error');
+      }
+    });
+
+    document.getElementById('passwordForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const cur  = document.getElementById('cur-pass').value;
+      const nw   = document.getElementById('new-pass').value;
+      const conf = document.getElementById('conf-pass').value;
+      if (!cur || !nw || !conf) { showToast('Fill all password fields.', 'warning'); return; }
+      if (nw !== conf) { showToast('New passwords do not match.', 'error'); return; }
+
+      const result = updateProfile(session.userId, { currentPassword: cur, newPassword: nw });
+      if (result.success) {
+        showToast('Password updated!', 'success');
+        document.getElementById('passwordForm').reset();
+      } else {
+        showToast(result.message, 'error');
+      }
+    });
+
+    // ─── SUPPORT ─────────────────────────────
+    function renderSupport() {
+      const tickets = getComplaints().filter(t => t.userId === session.userId);
+      const list = document.getElementById('myTicketsList');
+      if (!tickets.length) {
+        list.innerHTML = '<p class="text-muted text-center" style="padding:var(--space-xl);">No tickets yet.</p>';
+        return;
+      }
+      list.innerHTML = tickets.map(t => `
+        <div class="ticket-card">
+          <div class="ticket-header">
+            <span class="ticket-id">#${t.id.slice(-6).toUpperCase()}</span>
+            <span class="badge badge-${t.status==='resolved'?'success':t.priority==='high'?'danger':'warning'}">${t.status}</span>
+          </div>
+          <div class="ticket-subject">${t.subject}</div>
+          <div class="ticket-preview">${t.message}</div>
+          <div class="text-sm text-muted">${formatDate(t.createdAt)} · Priority: ${t.priority}</div>
+        </div>`).join('');
+    }
+
+    document.getElementById('supportForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const subject  = document.getElementById('ticketSubject').value.trim();
+      const priority = document.getElementById('ticketPriority').value;
+      const message  = document.getElementById('ticketMessage').value.trim();
+      if (!subject || !message) { showToast('Please fill all fields.', 'warning'); return; }
+
+      addComplaint({ id: genId('ticket'), userId: session.userId, subject, message, priority, status: 'open', createdAt: new Date().toISOString() });
+      showToast('Support ticket submitted!', 'success');
+      document.getElementById('supportForm').reset();
+      renderSupport();
+    });
+
+    // ─── HELPERS ─────────────────────────────
+    function statusBadgeClass(status) {
+      return { active:'success', pending:'warning', rejected:'danger', completed:'info' }[status] || 'muted';
+    }
+    function statusDot(status) {
+      const c = { active:'#22d3a5', pending:'#f59e0b', rejected:'#f43f5e' }[status] || '#8892b0';
+      return `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${c};margin-right:4px;"></span>`;
+    }
+
+    // ─── MOBILE SIDEBAR ──────────────────────
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    // ─── START ───────────────────────────────
+    init();
+  </script>
+</body>
+</html>

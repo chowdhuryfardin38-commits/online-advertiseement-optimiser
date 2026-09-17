@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Access — AdOptimize Pro</title>
+  <meta name="description" content="Secure admin portal for AdOptimize Pro. Authorized administrators only.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/admin-login.css">
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+  </div>
+
+  <div id="toast-container" role="status" aria-live="polite"></div>
+
+  <main class="auth-page" style="position:relative;z-index:1;">
+    <!-- LEFT PANEL — Admin Branding -->
+    <section class="auth-left admin-auth-left" aria-label="Admin portal overview">
+      <div class="auth-brand">
+        <div class="brand-logo admin-brand-logo" aria-hidden="true">🛡️</div>
+        <span class="brand-name">AdOptimize Pro</span>
+      </div>
+
+      <div class="admin-access-badge">
+        <span class="admin-access-icon">🔐</span>
+        <span>ADMINISTRATOR ACCESS</span>
+      </div>
+
+      <h1 class="auth-headline">
+        Admin<br><span>Control Center</span>
+      </h1>
+      <p class="auth-desc">
+        Secure access point for platform administrators. Manage users, approve campaigns, monitor revenue, and configure system settings.
+      </p>
+
+      <div class="auth-features" role="list">
+        <div class="auth-feature" role="listitem">
+          <div class="auth-feature-icon admin-feature-icon" aria-hidden="true">👥</div>
+          <span>Full user management & account control</span>
+        </div>
+        <div class="auth-feature" role="listitem">
+          <div class="auth-feature-icon admin-feature-icon" aria-hidden="true">📢</div>
+          <span>Campaign approval & content moderation</span>
+        </div>
+        <div class="auth-feature" role="listitem">
+          <div class="auth-feature-icon admin-feature-icon" aria-hidden="true">💰</div>
+          <span>Revenue tracking & financial reports</span>
+        </div>
+        <div class="auth-feature" role="listitem">
+          <div class="auth-feature-icon admin-feature-icon" aria-hidden="true">⚙️</div>
+          <span>System settings & optimization config</span>
+        </div>
+      </div>
+
+      <div class="auth-stats">
+        <div>
+          <div class="auth-stat-val admin-stat-val">🛡️</div>
+          <div class="auth-stat-lbl">Secured</div>
+        </div>
+        <div>
+          <div class="auth-stat-val admin-stat-val">24/7</div>
+          <div class="auth-stat-lbl">Monitoring</div>
+        </div>
+        <div>
+          <div class="auth-stat-val admin-stat-val">AES</div>
+          <div class="auth-stat-lbl">Encrypted</div>
+        </div>
+      </div>
+
+      <!-- Floating admin cards -->
+      <div class="floating-cards" aria-hidden="true">
+        <div class="floating-card admin-floating-card">
+          <div class="floating-card-label">System Status</div>
+          <div class="floating-card-value" style="color:#22d3a5;">● Online</div>
+          <div class="floating-card-change">All systems operational</div>
+        </div>
+        <div class="floating-card admin-floating-card">
+          <div class="floating-card-label">Security Level</div>
+          <div class="floating-card-value">Maximum</div>
+          <div class="floating-card-change">🔒 Group code required</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL — Admin Auth Forms -->
+    <section class="auth-right admin-auth-right" aria-label="Admin authentication">
+      <div class="auth-form-wrap">
+        <!-- Security header -->
+        <div class="admin-security-header">
+          <div class="security-shield">🛡️</div>
+          <div class="security-text">
+            <div class="security-title">Secured Portal</div>
+            <div class="security-sub">Group code verification required</div>
+          </div>
+          <div class="security-indicator">
+            <span class="security-dot"></span>
+            <span class="security-label">Protected</span>
+          </div>
+        </div>
+
+        <!-- Tab toggle -->
+        <div class="auth-tab-toggle admin-tab-toggle" role="tablist">
+          <button class="auth-tab-btn admin-tab-btn active" id="tab-admin-login" role="tab" aria-selected="true" aria-controls="form-admin-login" onclick="switchAdminTab('login')">Admin Sign In</button>
+          <button class="auth-tab-btn admin-tab-btn" id="tab-admin-register" role="tab" aria-selected="false" aria-controls="form-admin-register" onclick="switchAdminTab('register')">Create Admin</button>
+        </div>
+
+        <!-- ADMIN LOGIN FORM -->
+        <div id="form-admin-login" role="tabpanel" aria-labelledby="tab-admin-login">
+          <h2 class="auth-form-title">Admin Sign In 🛡️</h2>
+          <p class="auth-form-sub">Enter your credentials and group code to access the admin panel</p>
+
+          <form class="auth-form" id="adminLoginForm" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="admin-login-email">Email Address</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">✉️</span>
+                <input class="form-control" type="email" id="admin-login-email" placeholder="admin@company.com" autocomplete="email" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="admin-login-password">Password</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔒</span>
+                <input class="form-control" type="password" id="admin-login-password" placeholder="Your admin password" autocomplete="current-password" required>
+                <button type="button" class="toggle-password" onclick="togglePwd('admin-login-password')" aria-label="Toggle password visibility">👁</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="admin-login-groupcode">
+                Group Code <span class="required-badge">Required</span>
+              </label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔑</span>
+                <input class="form-control group-code-input" type="text" id="admin-login-groupcode" placeholder="Enter your group code" autocomplete="off" required>
+              </div>
+              <div class="group-code-hint">
+                <span class="hint-icon">ℹ️</span>
+                <span>Contact your system administrator for the group access code</span>
+              </div>
+            </div>
+
+            <button type="submit" class="auth-submit-btn admin-submit-btn" id="adminLoginSubmitBtn">
+              <span class="btn-icon">🛡️</span> Sign In to Admin Panel →
+            </button>
+          </form>
+
+          <div class="demo-hint admin-demo-hint">
+            <p>🧪 Demo Admin: <strong>admin@adpro.com</strong> / <strong>admin123</strong></p>
+            <p style="margin-top:4px;">🔑 Group Code: <strong>group 5</strong></p>
+            <p style="margin-top:8px;"><a onclick="fillAdminDemo()">Auto-fill Demo Credentials</a></p>
+          </div>
+        </div>
+
+        <!-- ADMIN REGISTER FORM -->
+        <div id="form-admin-register" class="hidden" role="tabpanel" aria-labelledby="tab-admin-register">
+          <h2 class="auth-form-title">Create Admin 🔐</h2>
+          <p class="auth-form-sub">Register a new administrator account with group authorization</p>
+
+          <form class="auth-form" id="adminRegisterForm" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="admin-reg-name">Full Name</label>
+                <div class="input-with-icon">
+                  <span class="input-icon" aria-hidden="true">👤</span>
+                  <input class="form-control" type="text" id="admin-reg-name" placeholder="Admin Name" autocomplete="name" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="admin-reg-company">Department</label>
+                <div class="input-with-icon">
+                  <span class="input-icon" aria-hidden="true">🏢</span>
+                  <input class="form-control" type="text" id="admin-reg-company" placeholder="e.g. Operations" autocomplete="organization">
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="admin-reg-email">Email Address</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">✉️</span>
+                <input class="form-control" type="email" id="admin-reg-email" placeholder="admin@company.com" autocomplete="email" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="admin-reg-password">Password</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔒</span>
+                <input class="form-control" type="password" id="admin-reg-password" placeholder="Min. 6 characters" autocomplete="new-password" required>
+                <button type="button" class="toggle-password" onclick="togglePwd('admin-reg-password')" aria-label="Toggle password visibility">👁</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="admin-reg-confirm">Confirm Password</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔑</span>
+                <input class="form-control" type="password" id="admin-reg-confirm" placeholder="Repeat password" autocomplete="new-password" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="admin-reg-groupcode">
+                Group Code <span class="required-badge">Required</span>
+              </label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔑</span>
+                <input class="form-control group-code-input" type="text" id="admin-reg-groupcode" placeholder="Enter authorization group code" autocomplete="off" required>
+              </div>
+              <div class="group-code-hint">
+                <span class="hint-icon">ℹ️</span>
+                <span>The group code is required to authorize admin account creation</span>
+              </div>
+            </div>
+
+            <button type="submit" class="auth-submit-btn admin-submit-btn" id="adminRegisterSubmitBtn">
+              <span class="btn-icon">🔐</span> Create Admin Account →
+            </button>
+          </form>
+        </div>
+
+        <!-- Back to advertiser login -->
+        <div class="admin-back-link">
+          <a href="index.html">← Back to Advertiser Login</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/notifications.js"></script>
+  <script>
+    const ADMIN_GROUP_CODE = 'group 5';
+
+    initDB();
+
+    // Redirect if already logged in as admin
+    const session = getSession();
+    if (session) {
+      if (session.role === 'admin') {
+        window.location.href = 'admin.html';
+      } else {
+        window.location.href = 'dashboard.html';
+      }
+    }
+
+    function switchAdminTab(tab) {
+      document.getElementById('form-admin-login').classList.toggle('hidden', tab !== 'login');
+      document.getElementById('form-admin-register').classList.toggle('hidden', tab !== 'register');
+      document.getElementById('tab-admin-login').classList.toggle('active', tab === 'login');
+      document.getElementById('tab-admin-register').classList.toggle('active', tab === 'register');
+      document.getElementById('tab-admin-login').setAttribute('aria-selected', tab === 'login');
+      document.getElementById('tab-admin-register').setAttribute('aria-selected', tab === 'register');
+    }
+
+    function togglePwd(inputId) {
+      const inp = document.getElementById(inputId);
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+
+    function fillAdminDemo() {
+      document.getElementById('admin-login-email').value = 'admin@adpro.com';
+      document.getElementById('admin-login-password').value = 'admin123';
+      document.getElementById('admin-login-groupcode').value = 'group 5';
+      switchAdminTab('login');
+    }
+
+    function setLoading(btnId, loading) {
+      const btn = document.getElementById(btnId);
+      if (loading) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="btn-spinner"></span> Verifying...';
+      } else {
+        btn.disabled = false;
+        if (btnId === 'adminLoginSubmitBtn') {
+          btn.innerHTML = '<span class="btn-icon">🛡️</span> Sign In to Admin Panel →';
+        } else {
+          btn.innerHTML = '<span class="btn-icon">🔐</span> Create Admin Account →';
+        }
+      }
+    }
+
+    // ─── ADMIN LOGIN ─────────────────────────
+    document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email     = document.getElementById('admin-login-email').value.trim();
+      const password  = document.getElementById('admin-login-password').value;
+      const groupCode = document.getElementById('admin-login-groupcode').value.trim().toLowerCase();
+
+      if (!email || !password || !groupCode) {
+        showToast('Please fill in all fields including the group code.', 'warning');
+        return;
+      }
+
+      // Verify group code first
+      if (groupCode !== ADMIN_GROUP_CODE) {
+        showToast('Invalid group code. Access denied.', 'error');
+        document.getElementById('admin-login-groupcode').classList.add('input-error');
+        setTimeout(() => {
+          document.getElementById('admin-login-groupcode').classList.remove('input-error');
+        }, 2000);
+        return;
+      }
+
+      setLoading('adminLoginSubmitBtn', true);
+      setTimeout(() => {
+        const result = loginUser(email, password);
+        if (result.success) {
+          // Verify user is actually an admin
+          if (result.user.role !== 'admin') {
+            showToast('This account is not an administrator account. Use the advertiser login instead.', 'error');
+            clearSession();
+            setLoading('adminLoginSubmitBtn', false);
+            return;
+          }
+          showToast('Welcome back, ' + result.user.name + '! Accessing admin panel...', 'success');
+          setTimeout(() => {
+            window.location.href = 'admin.html';
+          }, 800);
+        } else {
+          showToast(result.message, 'error');
+          setLoading('adminLoginSubmitBtn', false);
+        }
+      }, 700);
+    });
+
+    // ─── ADMIN REGISTER ──────────────────────
+    document.getElementById('adminRegisterForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name      = document.getElementById('admin-reg-name').value.trim();
+      const company   = document.getElementById('admin-reg-company').value.trim();
+      const email     = document.getElementById('admin-reg-email').value.trim();
+      const password  = document.getElementById('admin-reg-password').value;
+      const confirm   = document.getElementById('admin-reg-confirm').value;
+      const groupCode = document.getElementById('admin-reg-groupcode').value.trim().toLowerCase();
+
+      if (!name || !email || !password || !confirm || !groupCode) {
+        showToast('Please fill in all required fields.', 'warning');
+        return;
+      }
+
+      if (password !== confirm) {
+        showToast('Passwords do not match.', 'error');
+        return;
+      }
+
+      if (password.length < 6) {
+        showToast('Password must be at least 6 characters.', 'error');
+        return;
+      }
+
+      // Verify group code
+      if (groupCode !== ADMIN_GROUP_CODE) {
+        showToast('Invalid group code. Admin account creation denied.', 'error');
+        document.getElementById('admin-reg-groupcode').classList.add('input-error');
+        setTimeout(() => {
+          document.getElementById('admin-reg-groupcode').classList.remove('input-error');
+        }, 2000);
+        return;
+      }
+
+      setLoading('adminRegisterSubmitBtn', true);
+      setTimeout(() => {
+        // Check if email already exists
+        const users = getUsers();
+        if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+          showToast('An account with this email already exists.', 'error');
+          setLoading('adminRegisterSubmitBtn', false);
+          return;
+        }
+
+        // Create admin user
+        const adminUser = {
+          id: genId('admin'),
+          name: name,
+          email: email.toLowerCase(),
+          password: password,
+          company: company || 'AdOptimize Pro',
+          role: 'admin',
+          active: true,
+          createdAt: new Date().toISOString(),
+          avatar: name[0].toUpperCase()
+        };
+
+        addUser(adminUser);
+        setSession(adminUser);
+
+        showToast('Admin account created! Redirecting to admin panel...', 'success');
+        setTimeout(() => {
+          window.location.href = 'admin.html';
+        }, 1000);
+      }, 800);
+    });
+  </script>
+</body>
+</html>

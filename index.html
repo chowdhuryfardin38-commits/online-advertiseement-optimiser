@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AdOptimize Pro — Smart Advertising Platform</title>
+  <meta name="description" content="Create, manage, and optimize your advertising campaigns with AI-powered insights. Reach your target audience and maximize ROI with AdOptimize Pro.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+  </div>
+
+  <div id="toast-container" role="status" aria-live="polite"></div>
+
+  <main class="auth-page" style="position:relative;z-index:1;">
+    <!-- LEFT PANEL -->
+    <section class="auth-left" aria-label="Platform overview">
+      <div class="auth-brand">
+        <div class="brand-logo" aria-hidden="true">🚀</div>
+        <span class="brand-name">AdOptimize Pro</span>
+      </div>
+
+      <h1 class="auth-headline">
+        Supercharge Your<br><span>Ad Campaigns</span>
+      </h1>
+      <p class="auth-desc">
+        Harness AI-powered insights to optimize your advertising campaigns, maximize ROI, and reach the right audience at the perfect moment.
+      </p>
+
+      <div class="auth-features" role="list">
+        <div class="auth-feature" role="listitem">
+          <div class="auth-feature-icon" aria-hidden="true">🎯</div>
+          <span>Precision audience targeting with real-time optimization</span>
+        </div>
+        <div class="auth-feature" role="listitem">
+          <div class="auth-feature-icon" aria-hidden="true">📊</div>
+          <span>Live analytics dashboard with actionable insights</span>
+        </div>
+        <div class="auth-feature" role="listitem">
+          <div class="auth-feature-icon" aria-hidden="true">💡</div>
+          <span>AI-driven keyword & schedule recommendations</span>
+        </div>
+        <div class="auth-feature" role="listitem">
+          <div class="auth-feature-icon" aria-hidden="true">🔒</div>
+          <span>Secure payments & complete budget control</span>
+        </div>
+      </div>
+
+      <div class="auth-stats" role="group" aria-label="Platform statistics">
+        <div>
+          <div class="auth-stat-val" aria-label="10,000+ advertisers">10K+</div>
+          <div class="auth-stat-lbl">Advertisers</div>
+        </div>
+        <div>
+          <div class="auth-stat-val" aria-label="2.4 billion impressions">2.4B</div>
+          <div class="auth-stat-lbl">Ad Impressions</div>
+        </div>
+        <div>
+          <div class="auth-stat-val" aria-label="94% client satisfaction">94%</div>
+          <div class="auth-stat-lbl">Client Satisfaction</div>
+        </div>
+      </div>
+
+      <!-- Floating stat cards -->
+      <div class="floating-cards" aria-hidden="true">
+        <div class="floating-card">
+          <div class="floating-card-label">Campaign CTR</div>
+          <div class="floating-card-value">4.8%</div>
+          <div class="floating-card-change">↑ +1.2% this week</div>
+        </div>
+        <div class="floating-card">
+          <div class="floating-card-label">Monthly Revenue</div>
+          <div class="floating-card-value">$48.2K</div>
+          <div class="floating-card-change">↑ +18% vs last month</div>
+        </div>
+        <div class="floating-card">
+          <div class="floating-card-label">Active Campaigns</div>
+          <div class="floating-card-value">1,284</div>
+          <div class="floating-card-change">↑ 43 new today</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL -->
+    <section class="auth-right" aria-label="Authentication">
+      <div class="auth-form-wrap">
+        <!-- Tab toggle -->
+        <div class="auth-tab-toggle" role="tablist">
+          <button class="auth-tab-btn active" id="tab-login" role="tab" aria-selected="true" aria-controls="form-login" onclick="switchTab('login')">Sign In</button>
+          <button class="auth-tab-btn" id="tab-register" role="tab" aria-selected="false" aria-controls="form-register" onclick="switchTab('register')">Create Account</button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <div id="form-login" role="tabpanel" aria-labelledby="tab-login">
+          <h2 class="auth-form-title">Welcome back 👋</h2>
+          <p class="auth-form-sub">Sign in to manage your ad campaigns</p>
+
+          <form class="auth-form" id="loginForm" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="login-email">Email Address</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">✉️</span>
+                <input class="form-control" type="email" id="login-email" placeholder="you@company.com" autocomplete="email" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="login-password">Password</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔒</span>
+                <input class="form-control" type="password" id="login-password" placeholder="Your password" autocomplete="current-password" required>
+                <button type="button" class="toggle-password" onclick="togglePwd('login-password')" aria-label="Toggle password visibility">👁</button>
+              </div>
+            </div>
+
+            <button type="submit" class="auth-submit-btn" id="loginSubmitBtn">Sign In →</button>
+          </form>
+
+          <div class="demo-hint">
+            <p>🧪 Demo Advertiser: <strong>demo@adpro.com</strong> / <strong>demo123</strong></p>
+            <p style="margin-top:8px;"><a onclick="fillDemo('advertiser')">Auto-fill Demo Credentials</a></p>
+          </div>
+
+          <div class="demo-hint" style="margin-top:12px; background:rgba(244,63,94,0.06); border-color:rgba(244,63,94,0.2);">
+            <p>🛡️ Are you an administrator?</p>
+            <p style="margin-top:6px;"><a href="admin-login.html" style="color:#f43f5e; font-weight:600;">Go to Admin Portal →</a></p>
+          </div>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div id="form-register" class="hidden" role="tabpanel" aria-labelledby="tab-register">
+          <h2 class="auth-form-title">Get started free 🎉</h2>
+          <p class="auth-form-sub">Create your advertiser account</p>
+
+          <form class="auth-form" id="registerForm" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="reg-name">Full Name</label>
+                <div class="input-with-icon">
+                  <span class="input-icon" aria-hidden="true">👤</span>
+                  <input class="form-control" type="text" id="reg-name" placeholder="Jane Smith" autocomplete="name" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="reg-company">Company</label>
+                <div class="input-with-icon">
+                  <span class="input-icon" aria-hidden="true">🏢</span>
+                  <input class="form-control" type="text" id="reg-company" placeholder="Acme Corp" autocomplete="organization">
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-email">Email Address</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">✉️</span>
+                <input class="form-control" type="email" id="reg-email" placeholder="you@company.com" autocomplete="email" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-password">Password</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔒</span>
+                <input class="form-control" type="password" id="reg-password" placeholder="Min. 6 characters" autocomplete="new-password" required>
+                <button type="button" class="toggle-password" onclick="togglePwd('reg-password')" aria-label="Toggle password visibility">👁</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-confirm">Confirm Password</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔑</span>
+                <input class="form-control" type="password" id="reg-confirm" placeholder="Repeat password" autocomplete="new-password" required>
+              </div>
+            </div>
+
+            <button type="submit" class="auth-submit-btn" id="registerSubmitBtn">Create Account →</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/notifications.js"></script>
+  <script>
+    initDB();
+
+    // Redirect if already logged in
+    const session = getSession();
+    if (session) {
+      window.location.href = session.role === 'admin' ? 'admin.html' : 'dashboard.html';
+    }
+
+    function switchTab(tab) {
+      document.getElementById('form-login').classList.toggle('hidden', tab !== 'login');
+      document.getElementById('form-register').classList.toggle('hidden', tab !== 'register');
+      document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+      document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+      document.getElementById('tab-login').setAttribute('aria-selected', tab === 'login');
+      document.getElementById('tab-register').setAttribute('aria-selected', tab === 'register');
+    }
+
+    function togglePwd(inputId) {
+      const inp = document.getElementById(inputId);
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+
+    function fillDemo(role) {
+      document.getElementById('login-email').value = 'demo@adpro.com';
+      document.getElementById('login-password').value = 'demo123';
+      switchTab('login');
+    }
+
+    function setLoading(btnId, loading) {
+      const btn = document.getElementById(btnId);
+      if (loading) {
+        btn.disabled = true;
+        btn.textContent = 'Please wait...';
+      } else {
+        btn.disabled = false;
+        btn.textContent = btnId === 'loginSubmitBtn' ? 'Sign In →' : 'Create Account →';
+      }
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email    = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      if (!email || !password) { showToast('Please fill in all fields.', 'warning'); return; }
+
+      setLoading('loginSubmitBtn', true);
+      setTimeout(() => {
+        const result = loginUser(email, password);
+        if (result.success) {
+          // If admin, redirect them to the dedicated admin login
+          if (result.user.role === 'admin') {
+            clearSession();
+            showToast('Admins must use the admin portal to sign in.', 'warning');
+            setTimeout(() => { window.location.href = 'admin-login.html'; }, 1200);
+            return;
+          }
+          showToast('Welcome back, ' + result.user.name + '!', 'success');
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 600);
+        } else {
+          showToast(result.message, 'error');
+          setLoading('loginSubmitBtn', false);
+        }
+      }, 500);
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name     = document.getElementById('reg-name').value.trim();
+      const company  = document.getElementById('reg-company').value.trim();
+      const email    = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const confirm  = document.getElementById('reg-confirm').value;
+
+      if (!name || !email || !password || !confirm) { showToast('Please fill in all required fields.', 'warning'); return; }
+      if (password !== confirm) { showToast('Passwords do not match.', 'error'); return; }
+
+      setLoading('registerSubmitBtn', true);
+      setTimeout(() => {
+        const result = registerUser(name, email, password, company);
+        if (result.success) {
+          showToast('Account created! Redirecting...', 'success');
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
+        } else {
+          showToast(result.message, 'error');
+          setLoading('registerSubmitBtn', false);
+        }
+      }, 600);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+/* ═══════════════════════════════════════════
+   ADMIN LOGIN — Dedicated Styles
+   Builds on top of auth.css with admin-specific
+   theming, security indicators, and group code UI
+═══════════════════════════════════════════ */
+
+/* ─── Admin Left Panel ─────────────────── */
+.admin-auth-left {
+  background: linear-gradient(135deg,
+    rgba(244, 63, 94, 0.12) 0%,
+    rgba(108, 99, 255, 0.10) 40%,
+    rgba(0, 212, 255, 0.05) 100%
+  );
+}
+
+.admin-brand-logo {
+  background: linear-gradient(135deg, #f43f5e, #6c63ff) !important;
+  box-shadow: 0 0 24px rgba(244, 63, 94, 0.4) !important;
+}
+
+.admin-access-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #f43f5e;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  animation: pulse-badge 3s ease-in-out infinite;
+}
+
+.admin-access-icon {
+  font-size: 14px;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.2); }
+  50% { box-shadow: 0 0 0 8px rgba(244, 63, 94, 0); }
+}
+
+.admin-feature-icon {
+  border-color: rgba(244, 63, 94, 0.2) !important;
+  background: rgba(244, 63, 94, 0.06) !important;
+}
+
+.admin-stat-val {
+  background: linear-gradient(135deg, #f43f5e, #6c63ff) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+.admin-floating-card {
+  border-color: rgba(244, 63, 94, 0.2) !important;
+}
+
+/* ─── Admin Right Panel ────────────────── */
+.admin-auth-right {
+  background: rgba(13, 17, 40, 0.95);
+  border-left-color: rgba(244, 63, 94, 0.15);
+}
+
+/* ─── Security Header ──────────────────── */
+.admin-security-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.08), rgba(108, 99, 255, 0.06));
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-security-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(244, 63, 94, 0.6), transparent);
+  animation: scan-line 4s linear infinite;
+}
+
+@keyframes scan-line {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(50%); }
+}
+
+.security-shield {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.security-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.security-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.security-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.security-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(34, 211, 165, 0.1);
+  border: 1px solid rgba(34, 211, 165, 0.25);
+  border-radius: 100px;
+  flex-shrink: 0;
+}
+
+.security-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22d3a5;
+  animation: blink-dot 2s ease-in-out infinite;
+}
+
+@keyframes blink-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.security-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #22d3a5;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ─── Admin Tab Toggle ─────────────────── */
+.admin-tab-toggle {
+  border-color: rgba(244, 63, 94, 0.15);
+}
+
+.admin-tab-btn.active {
+  background: linear-gradient(135deg, #f43f5e, #6c63ff) !important;
+  box-shadow: 0 4px 16px rgba(244, 63, 94, 0.4) !important;
+}
+
+/* ─── Group Code Field ─────────────────── */
+.group-code-input {
+  border-color: rgba(244, 63, 94, 0.3) !important;
+  background: rgba(244, 63, 94, 0.04) !important;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.group-code-input:focus {
+  border-color: #f43f5e !important;
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.15) !important;
+}
+
+.group-code-input::placeholder {
+  letter-spacing: normal;
+  font-weight: 400;
+}
+
+.required-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #f43f5e;
+  background: rgba(244, 63, 94, 0.1);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  border-radius: 100px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.group-code-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(108, 99, 255, 0.06);
+  border: 1px solid rgba(108, 99, 255, 0.12);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.hint-icon {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* ─── Input Error State ────────────────── */
+.input-error {
+  border-color: #f43f5e !important;
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2) !important;
+  animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+/* ─── Admin Submit Button ──────────────── */
+.admin-submit-btn {
+  background: linear-gradient(135deg, #f43f5e, #6c63ff) !important;
+  box-shadow: 0 4px 20px rgba(244, 63, 94, 0.35) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.admin-submit-btn:hover {
+  box-shadow: 0 8px 32px rgba(244, 63, 94, 0.5) !important;
+}
+
+.btn-icon {
+  font-size: 18px;
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Admin Demo Hint ──────────────────── */
+.admin-demo-hint {
+  background: rgba(244, 63, 94, 0.06) !important;
+  border-color: rgba(244, 63, 94, 0.2) !important;
+}
+
+.admin-demo-hint strong {
+  color: #f43f5e !important;
+}
+
+/* ─── Back Link ────────────────────────── */
+.admin-back-link {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.admin-back-link a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-decoration: none;
+  transition: all var(--transition-base);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+}
+
+.admin-back-link a:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .admin-auth-left { display: none; }
+  .admin-auth-right {
+    width: 100%;
+    border-left: none;
+    padding: 48px var(--space-lg);
+  }
+  .auth-form-wrap { max-width: 480px; margin: 0 auto; }
+}
+
+@media (max-width: 480px) {
+  .admin-auth-right { padding: var(--space-lg); }
+  .admin-security-header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .security-indicator {
+    width: 100%;
+    justify-content: center;
+  }
+  .form-row { grid-template-columns: 1fr; }
+}
