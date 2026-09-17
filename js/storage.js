@@ -200,8 +200,24 @@ const defaultDB = {
 
 // Initialize DB
 function initDB() {
-  if (!localStorage.getItem(DB_KEY)) {
+  const existing = localStorage.getItem(DB_KEY);
+  if (!existing) {
     localStorage.setItem(DB_KEY, JSON.stringify(defaultDB));
+  } else {
+    try {
+      const db = JSON.parse(existing);
+      let updated = false;
+      // Ensure default users exist if DB missing them
+      defaultDB.users.forEach(defUser => {
+        if (!db.users.some(u => u.email.toLowerCase() === defUser.email.toLowerCase())) {
+          db.users.push(defUser);
+          updated = true;
+        }
+      });
+      if (updated) saveDB(db);
+    } catch {
+      localStorage.setItem(DB_KEY, JSON.stringify(defaultDB));
+    }
   }
 }
 
