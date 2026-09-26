@@ -1,0 +1,26 @@
+{
+  "name": "online-advertisement_optimiser",
+  "version": "1.0.0",
+  "description": "Online Advertisement Optimiser Platform",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chowdhuryfardin38-commits/online-advertiseement-optimiser.git"
+  },
+  "homepage": "https://github.com/chowdhuryfardin38-commits/online-advertiseement-optimiser#readme",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "private": true,
+  "dependencies": {
+    "express": "^4.19.2",
+    "pg": "^8.12.0",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "vite": "^8.0.16"
+  }
+}
