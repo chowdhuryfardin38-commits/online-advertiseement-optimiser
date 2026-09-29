@@ -1,24 +1,20 @@
-// ═══════════════════════════════════════════
-// GOOGLE-AUTH.JS — Google Identity Services
-// ═══════════════════════════════════════════
-//
-//  ⚠️  ACTION REQUIRED:
-//  Replace the placeholder below with your real
-//  Google OAuth Client ID from Google Cloud Console.
-//
-//  How to get one:
-//  1. Go to https://console.cloud.google.com/
-//  2. Create or select a project
-//  3. Navigate to APIs & Services → Credentials
-//  4. Click "Create Credentials" → "OAuth client ID"
-//  5. Choose "Web application"
-//  6. Under "Authorized JavaScript origins" add:
-//       http://localhost:5173   (Vite dev server)
-//       http://localhost:3000   (if using another port)
-//       https://your-production-domain.com
-//  7. Copy the "Client ID" and paste it below.
-//
-const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+// ═══════════════════════════════════════════════════════════════
+// GOOGLE-AUTH.JS — Google Identity Services & OAuth Integration
+// ═══════════════════════════════════════════════════════════════
+
+// Default configured Client ID (or retrieved dynamically from localStorage)
+let GOOGLE_CLIENT_ID = localStorage.getItem('GOOGLE_CLIENT_ID') || 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+
+function getGoogleClientId() {
+  return localStorage.getItem('GOOGLE_CLIENT_ID') || GOOGLE_CLIENT_ID;
+}
+
+function setGoogleClientId(newId) {
+  if (!newId) return;
+  newId = newId.trim();
+  localStorage.setItem('GOOGLE_CLIENT_ID', newId);
+  GOOGLE_CLIENT_ID = newId;
+}
 
 // ─── Parse JWT without a library ──────────────
 function parseJwt(token) {
@@ -108,65 +104,149 @@ function onGoogleCredentialResponse(response) {
   }
 }
 
+// ─── Modal to prompt for Client ID if not yet configured ───
+function showClientIdPromptModal() {
+  const existing = document.getElementById('google-config-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'google-config-modal';
+  modal.style.cssText = `
+    position: fixed; inset: 0; z-index: 99999;
+    background: rgba(10, 15, 30, 0.85); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  `;
+
+  modal.innerHTML = `
+    <div style="
+      background: #1e293b; border: 1px solid rgba(255,255,255,0.15); border-radius: 16px;
+      max-width: 520px; width: 100%; padding: 28px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+      color: #f8fafc; font-family: 'Outfit', sans-serif;
+    ">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="font-size:20px; font-weight:700; margin:0; display:flex; align-items:center; gap:8px;">
+          🔑 Connect Google OAuth
+        </h3>
+        <button onclick="document.getElementById('google-config-modal').remove()" style="
+          background: transparent; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;
+        ">✕</button>
+      </div>
+
+      <p style="font-size:14px; color:#94a3b8; line-height:1.5; margin-bottom:16px;">
+        To enable Google Sign-In, enter your Google OAuth Client ID for project <b style="color:#60a5fa;">online-advertisement-optimiser</b>:
+      </p>
+
+      <div style="background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.3); border-radius:10px; padding:12px 16px; margin-bottom:18px; font-size:13px; color:#cbd5e1;">
+        👉 <b>Quick Link:</b> <a href="https://console.cloud.google.com/apis/credentials/oauthclient?project=online-advertisement-optimiser" target="_blank" rel="noreferrer" style="color:#60a5fa; text-decoration:underline; font-weight:600;">Create OAuth Client ID in Google Cloud Console</a>
+        <div style="margin-top:6px; font-size:12px; color:#94a3b8;">
+          Choose <b>Web application</b> and add <code>${window.location.origin}</code> to <b>Authorized JavaScript origins</b>.
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:#e2e8f0;">
+          Google Client ID:
+        </label>
+        <input type="text" id="g_client_id_input" placeholder="xxxxxxxxxxxx-xxxxxxxxxxxxxxxx.apps.googleusercontent.com" style="
+          width: 100%; padding: 12px 14px; background: #0f172a; border: 1px solid #334155;
+          border-radius: 8px; color: #fff; font-size: 13px; outline: none; font-family: monospace;
+          box-sizing: border-box;
+        " />
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button onclick="document.getElementById('google-config-modal').remove()" style="
+          padding: 10px 18px; background: transparent; border: 1px solid #475569;
+          border-radius: 8px; color: #cbd5e1; font-size: 14px; cursor: pointer;
+        ">Cancel</button>
+        <button id="save_client_id_btn" style="
+          padding: 10px 20px; background: linear-gradient(135deg, #3b82f6, #6366f1);
+          border: none; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer;
+        ">Save & Sign In</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const input = document.getElementById('g_client_id_input');
+  input.focus();
+
+  document.getElementById('save_client_id_btn').addEventListener('click', () => {
+    const val = input.value.trim();
+    if (!val || !val.includes('.apps.googleusercontent.com')) {
+      alert('Please enter a valid Client ID ending in .apps.googleusercontent.com');
+      return;
+    }
+    setGoogleClientId(val);
+    modal.remove();
+    showToast('Client ID saved! Initializing Google Sign-In...', 'success');
+    handleGoogleSignIn();
+  });
+}
+
 // ─── Open Google One-Tap / Popup ──────────────
 function handleGoogleSignIn() {
-  if (GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com') {
-    showToast(
-      '⚠️ Google Client ID not configured. Open js/google-auth.js and replace the placeholder.',
-      'warning'
-    );
+  const clientId = getGoogleClientId();
+
+  if (!clientId || clientId.startsWith('YOUR_GOOGLE_CLIENT_ID')) {
+    showClientIdPromptModal();
     return;
   }
 
   setGoogleBtnLoading(true);
 
-  // Initialize GIS client and trigger popup flow
   if (typeof google === 'undefined' || !google.accounts) {
-    showToast('Google Sign-In library not loaded. Check your internet connection.', 'error');
+    showToast('Google Sign-In library is loading or blocked by ad-blocker.', 'error');
     setGoogleBtnLoading(false);
     return;
   }
 
-  const client = google.accounts.oauth2.initTokenClient({
-    client_id: GOOGLE_CLIENT_ID,
-    scope: 'openid email profile',
-    callback: () => {}  // not used for id_token flow
-  });
+  try {
+    google.accounts.id.initialize({
+      client_id: clientId,
+      callback: onGoogleCredentialResponse,
+      auto_select: false,
+      cancel_on_tap_outside: true
+    });
 
-  // Use the id_token (credential) flow instead
-  google.accounts.id.initialize({
-    client_id: GOOGLE_CLIENT_ID,
-    callback: onGoogleCredentialResponse,
-    auto_select: false,
-    cancel_on_tap_outside: true
-  });
+    google.accounts.id.prompt(notification => {
+      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+        // Fallback to standard prompt / rendering button
+        const hiddenContainer = document.createElement('div');
+        hiddenContainer.id = 'g_id_hidden_wrapper';
+        hiddenContainer.style.display = 'none';
+        document.body.appendChild(hiddenContainer);
 
-  google.accounts.id.prompt(notification => {
-    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-      // One-Tap not available — fall back to popup
-      google.accounts.id.renderButton(
-        document.createElement('div'),   // hidden container
-        { type: 'standard' }
-      );
-      // Trigger the popup manually
-      const hiddenBtn = document.querySelector('.g_id_signin button');
-      if (hiddenBtn) hiddenBtn.click();
-      setGoogleBtnLoading(false);
-    }
-  });
+        google.accounts.id.renderButton(hiddenContainer, { type: 'standard' });
+        const btn = hiddenContainer.querySelector('div[role=button]');
+        if (btn) {
+          btn.click();
+        }
+        setGoogleBtnLoading(false);
+      }
+    });
+  } catch (err) {
+    console.error('Google Auth Error:', err);
+    showToast('Error initializing Google Sign-In: ' + err.message, 'error');
+    setGoogleBtnLoading(false);
+  }
 }
 
 // ─── Auto-initialize One-Tap on page load ─────
 window.addEventListener('load', () => {
-  if (GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com') return;
+  const clientId = getGoogleClientId();
+  if (!clientId || clientId.startsWith('YOUR_GOOGLE_CLIENT_ID')) return;
   if (typeof google === 'undefined' || !google.accounts) return;
 
-  google.accounts.id.initialize({
-    client_id: GOOGLE_CLIENT_ID,
-    callback: onGoogleCredentialResponse,
-    auto_select: false
-  });
-
-  // Show One-Tap prompt automatically
-  google.accounts.id.prompt();
+  try {
+    google.accounts.id.initialize({
+      client_id: clientId,
+      callback: onGoogleCredentialResponse,
+      auto_select: false
+    });
+    google.accounts.id.prompt();
+  } catch (e) {
+    console.warn('Google One-Tap auto-prompt suppressed:', e);
+  }
 });
