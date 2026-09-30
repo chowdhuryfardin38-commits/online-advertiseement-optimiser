@@ -50,6 +50,10 @@ const ApiClient = (() => {
     return request('POST', '/api/auth/login', { email, password });
   }
 
+  async function googleLogin(credential) {
+    return request('POST', '/api/auth/google', { credential });
+  }
+
   async function logout() {
     return request('POST', '/api/auth/logout');
   }
@@ -133,7 +137,7 @@ const ApiClient = (() => {
   }
 
   return {
-    register, login, logout, getMe, updateProfile,
+    register, login, googleLogin, logout, getMe, updateProfile,
     getCampaigns, getCampaignStats, getCampaign,
     createCampaign, updateCampaign, deleteCampaign,
     adminGetStats, adminGetUsers, adminSetUserStatus, adminSetUserRole,
