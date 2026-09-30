@@ -15,18 +15,21 @@ CREATE TABLE IF NOT EXISTS users (
   id          INT AUTO_INCREMENT PRIMARY KEY,
   name        VARCHAR(100)  NOT NULL,
   email       VARCHAR(150)  NOT NULL UNIQUE,
-  password    VARCHAR(255)  NOT NULL,          -- bcrypt hash, never plain text
+  password    VARCHAR(255)  NULL,              -- bcrypt hash, nullable for OAuth users
   company     VARCHAR(150)  DEFAULT '',
   role        ENUM('advertiser','admin')        DEFAULT 'advertiser',
   status      ENUM('active','inactive')         DEFAULT 'active',
   avatar      VARCHAR(10)   DEFAULT '',
+  google_id   VARCHAR(100)  DEFAULT NULL,
+  picture     TEXT          DEFAULT NULL,
   budget      DECIMAL(12,2) DEFAULT 0.00,
   total_spent DECIMAL(12,2) DEFAULT 0.00,
   created_at  TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
   updated_at  TIMESTAMP     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  INDEX idx_email  (email),
-  INDEX idx_role   (role),
-  INDEX idx_status (status)
+  INDEX idx_email     (email),
+  INDEX idx_role      (role),
+  INDEX idx_status    (status),
+  INDEX idx_google_id (google_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ── Campaigns ────────────────────────────────────
