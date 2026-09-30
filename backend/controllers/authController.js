@@ -2,9 +2,12 @@
 // CONTROLLERS/AUTHCONTROLLER.JS
 // Handles: register, login, logout, me, updateProfile
 // ═══════════════════════════════════════════
-const bcrypt   = require('bcryptjs');
-const jwt      = require('jsonwebtoken');
-const pool     = require('../config/database');
+const bcrypt       = require('bcryptjs');
+const jwt          = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
+const pool         = require('../config/database');
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // ── Cookie helper ─────────────────────────
 function sendAuthCookie(res, token) {
@@ -205,4 +208,107 @@ async function updateProfile(req, res) {
   }
 }
 
-module.exports = { register, login, logout, me, updateProfile };
+// ── POST /api/auth/google ─────────────────
+async function googleAuth(req, res) {
+  try {
+    const { credential } = req.body;
+
+    if (!credential) {
+      return res.status(400).json({ success: false, message: 'Google credential token is required.' });
+    }
+
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: clientId
+    });
+
+    const payload = ticket.getPayload();
+    const { email, name, sub: googleId, picture } = payload;
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Google account does not contain a valid email.' });
+    }
+
+    const lowerEmail = email.toLowerCase();
+
+    // Check if user exists
+    const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [lowerEmail]);
+    let user;
+
+    if (rows.length > 0) {
+      user = rows[0];
+
+      // Block inactive
+      if (user.status === 'inactive') {
+        return res.status(403).json({ success: false, message: 'Your account has been deactivated. Please contact support.' });
+      }
+
+      // Block admin from public Google sign in
+      if (user.role === 'admin') {
+        return res.status(403).json({ success: false, message: 'Admins must sign in via the Admin Portal.' });
+      }
+
+      // Update google_id and picture if not already set
+      await pool.query(
+        'UPDATE users SET google_id = COALESCE(google_id, ?), picture = COALESCE(picture, ?) WHERE id = ?',
+        [googleId, picture || null, user.id]
+      );
+    } else {
+      // Auto-register new user
+      const avatar = (name || email)[0].toUpperCase();
+      const [result] = await pool.query(
+        `INSERT INTO users (name, email, password, company, role, status, avatar, google_id, picture, budget, total_spent)
+         VALUES (?, ?, NULL, '', 'advertiser', 'active', ?, ?, ?, 0, 0)`,
+        [name ? name.trim() : lowerEmail.split('@')[0], lowerEmail, avatar, googleId, picture || null]
+      );
+
+      const userId = result.insertId;
+
+      await pool.query(
+        `INSERT INTO notifications (user_id, type, title, message)
+         VALUES (?, 'success', 'Welcome to AdOptimize Pro!', ?)`,
+        [userId, `Hi ${name || 'there'}, your account is set up via Google Sign-In. Create your first campaign to get started!`]
+      );
+
+      user = {
+        id: userId,
+        name: name ? name.trim() : lowerEmail.split('@')[0],
+        email: lowerEmail,
+        role: 'advertiser',
+        avatar,
+        budget: 0,
+        company: ''
+      };
+    }
+
+    // Sign JWT
+    const token = jwt.sign(
+      { id: user.id, role: user.role, email: user.email, name: user.name },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    sendAuthCookie(res, token);
+
+    return res.json({
+      success: true,
+      message: 'Google login successful.',
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+        budget: user.budget || 0,
+        company: user.company || ''
+      }
+    });
+
+  } catch (err) {
+    console.error('Google Auth Controller Error:', err);
+    return res.status(401).json({ success: false, message: 'Google authentication failed: ' + (err.message || 'Invalid token') });
+  }
+}
+
+module.exports = { register, login, logout, me, updateProfile, googleAuth };
