@@ -22,3 +22,15 @@ npm run dev
 ```
 
 Open `http://localhost:5173` in your browser.
+
+## Authentication Setup (Clerk)
+- Integrated with Clerk SDK for secure authentication and user management.
+- Configure environment variables in `.env`:
+  ```env
+  VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
+  ```
+- Backend credentials configured in `backend/.env`:
+  ```env
+  CLERK_SECRET_KEY=sk_test_...
+  CLERK_FRONTEND_API_URL=https://<your-app>.clerk.accounts.dev
+  ```
