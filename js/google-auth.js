@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 // Default configured Client ID (or retrieved dynamically from localStorage)
-let GOOGLE_CLIENT_ID = localStorage.getItem('GOOGLE_CLIENT_ID') || 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+let GOOGLE_CLIENT_ID = localStorage.getItem('GOOGLE_CLIENT_ID') || '799350137210-5co44vsuel6r4arho6f7v6bv0dcihoa6.apps.googleusercontent.com';
 
 function getGoogleClientId() {
   return localStorage.getItem('GOOGLE_CLIENT_ID') || GOOGLE_CLIENT_ID;
@@ -43,7 +43,7 @@ function setGoogleBtnLoading(loading) {
 }
 
 // ─── Handle credential response from Google ───
-function onGoogleCredentialResponse(response) {
+async function onGoogleCredentialResponse(response) {
   setGoogleBtnLoading(false);
 
   const payload = parseJwt(response.credential);
@@ -54,53 +54,73 @@ function onGoogleCredentialResponse(response) {
 
   const { email, name, sub: googleId, picture } = payload;
 
-  // Block admin-role emails from using Google sign-in
-  const adminUser = getUsers().find(
-    u => u.email.toLowerCase() === email.toLowerCase() && u.role === 'admin'
-  );
-  if (adminUser) {
-    showToast('Admins must use the Admin Portal to sign in.', 'warning');
-    setTimeout(() => { window.location.href = 'admin-login.html'; }, 1200);
-    return;
+  // Try backend authentication first if available
+  if (typeof window.ApiClient !== 'undefined' && typeof window.ApiClient.googleLogin === 'function') {
+    try {
+      const result = await window.ApiClient.googleLogin(response.credential);
+      if (result && result.success) {
+        if (typeof setSession === 'function') {
+          setSession(result.user);
+        }
+        showToast(`Welcome, ${result.user.name}! 👋`, 'success');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
+        return;
+      }
+    } catch (apiErr) {
+      console.warn('Backend Google Auth failed or unreachable, falling back to local session:', apiErr);
+    }
   }
 
-  // Check if user already exists
-  const existingUser = getUsers().find(
-    u => u.email.toLowerCase() === email.toLowerCase()
-  );
-
-  if (existingUser) {
-    // ── Returning Google user: log in ──────────
-    if (!existingUser.active) {
-      showToast('Your account has been deactivated. Please contact support.', 'error');
+  // Fallback to local storage DB
+  if (typeof getUsers === 'function') {
+    // Block admin-role emails from using Google sign-in
+    const adminUser = getUsers().find(
+      u => u.email.toLowerCase() === email.toLowerCase() && u.role === 'admin'
+    );
+    if (adminUser) {
+      showToast('Admins must use the Admin Portal to sign in.', 'warning');
+      setTimeout(() => { window.location.href = 'admin-login.html'; }, 1200);
       return;
     }
-    setSession(existingUser);
-    showToast(`Welcome back, ${existingUser.name}! 👋`, 'success');
-    setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
-  } else {
-    // ── New user: auto-register via Google ─────
-    const newUser = {
-      id: genId('user'),
-      name: name || email.split('@')[0],
-      email: email.toLowerCase(),
-      password: null,           // no password for OAuth users
-      company: '',
-      role: 'advertiser',
-      active: true,
-      createdAt: new Date().toISOString(),
-      avatar: (name || email)[0].toUpperCase(),
-      budget: 0,
-      totalSpent: 0,
-      googleId,
-      picture: picture || null,
-      authProvider: 'google'
-    };
 
-    addUser(newUser);
-    setSession(newUser);
-    showToast(`Account created! Welcome, ${newUser.name}! 🎉`, 'success');
-    setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
+    // Check if user already exists
+    const existingUser = getUsers().find(
+      u => u.email.toLowerCase() === email.toLowerCase()
+    );
+
+    if (existingUser) {
+      // ── Returning Google user: log in ──────────
+      if (!existingUser.active) {
+        showToast('Your account has been deactivated. Please contact support.', 'error');
+        return;
+      }
+      setSession(existingUser);
+      showToast(`Welcome back, ${existingUser.name}! 👋`, 'success');
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
+    } else {
+      // ── New user: auto-register via Google ─────
+      const newUser = {
+        id: typeof genId === 'function' ? genId('user') : 'user_' + Date.now(),
+        name: name || email.split('@')[0],
+        email: email.toLowerCase(),
+        password: null,           // no password for OAuth users
+        company: '',
+        role: 'advertiser',
+        active: true,
+        createdAt: new Date().toISOString(),
+        avatar: (name || email)[0].toUpperCase(),
+        budget: 0,
+        totalSpent: 0,
+        googleId,
+        picture: picture || null,
+        authProvider: 'google'
+      };
+
+      if (typeof addUser === 'function') addUser(newUser);
+      if (typeof setSession === 'function') setSession(newUser);
+      showToast(`Account created! Welcome, ${newUser.name}! 🎉`, 'success');
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
+    }
   }
 }
 
