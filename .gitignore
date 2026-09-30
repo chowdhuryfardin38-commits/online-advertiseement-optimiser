@@ -4,5 +4,7 @@ dist/
 .DS_Store
 adoptimize.db
 
-# Backend secrets — NEVER commit .env
+# Environment & secrets — NEVER commit .env
+.env
+.env.*
 backend/.env
