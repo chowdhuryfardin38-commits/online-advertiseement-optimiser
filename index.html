@@ -7,8 +7,14 @@
   <meta name="description" content="Create, manage, and optimize your advertising campaigns with AI-powered insights. Reach your target audience and maximize ROI with AdOptimize Pro.">
   <link rel="stylesheet" href="css/global.css">
   <link rel="stylesheet" href="css/auth.css">
-  <!-- Google Identity Services -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Clerk Authentication -->
+  <script
+    async
+    crossorigin="anonymous"
+    data-clerk-publishable-key="pk_test_YWxlcnQtamF5LTI5NTcuY2xlcmsuYWNjb3VudHMuZGV2JA"
+    src="https://alert-jay-2957.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    type="text/javascript"
+  ></script>
 </head>
 <body>
   <div class="bg-orbs" aria-hidden="true">
@@ -99,118 +105,18 @@
       <div class="auth-form-wrap">
         <!-- Tab toggle -->
         <div class="auth-tab-toggle" role="tablist">
-          <button class="auth-tab-btn active" id="tab-login" role="tab" aria-selected="true" aria-controls="form-login" onclick="switchTab('login')">Sign In</button>
-          <button class="auth-tab-btn" id="tab-register" role="tab" aria-selected="false" aria-controls="form-register" onclick="switchTab('register')">Create Account</button>
+          <button class="auth-tab-btn active" id="tab-login" role="tab" aria-selected="true" onclick="clerkSwitchTab('login')">Sign In</button>
+          <button class="auth-tab-btn" id="tab-register" role="tab" aria-selected="false" onclick="clerkSwitchTab('register')">Create Account</button>
         </div>
 
-        <!-- LOGIN FORM -->
-        <div id="form-login" role="tabpanel" aria-labelledby="tab-login">
-          <h2 class="auth-form-title">Welcome back 👋</h2>
-          <p class="auth-form-sub">Sign in to manage your ad campaigns</p>
+        <!-- Clerk components (auto-includes Google OAuth, email/password, etc.) -->
+        <div id="clerk-sign-in"></div>
+        <div id="clerk-sign-up" style="display:none;"></div>
 
-          <form class="auth-form" id="loginForm" novalidate>
-            <div class="form-group">
-              <label class="form-label" for="login-email">Email Address</label>
-              <div class="input-with-icon">
-                <span class="input-icon" aria-hidden="true">✉️</span>
-                <input class="form-control" type="email" id="login-email" placeholder="you@company.com" autocomplete="email" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="login-password">Password</label>
-              <div class="input-with-icon">
-                <span class="input-icon" aria-hidden="true">🔒</span>
-                <input class="form-control" type="password" id="login-password" placeholder="Your password" autocomplete="current-password" required>
-                <button type="button" class="toggle-password" onclick="togglePwd('login-password')" aria-label="Toggle password visibility">👁</button>
-              </div>
-            </div>
-
-            <button type="submit" class="auth-submit-btn" id="loginSubmitBtn">Sign In →</button>
-          </form>
-
-
-
-          <!-- Google Sign-In -->
-          <div class="oauth-divider">or</div>
-          <button type="button" class="google-signin-btn" id="googleSignInBtnLogin" onclick="handleGoogleSignIn()">
-            <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20">
-              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-              <path fill="none" d="M0 0h48v48H0z"/>
-            </svg>
-            <div class="btn-spinner"></div>
-            <span>Continue with Google</span>
-          </button>
-
-          <div class="demo-hint" style="margin-top:12px; background:rgba(244,63,94,0.06); border-color:rgba(244,63,94,0.2);">
-            <p>🛡️ Are you an administrator?</p>
-            <p style="margin-top:6px;"><a href="admin-login.html" style="color:#f43f5e; font-weight:600;">Go to Admin Portal →</a></p>
-          </div>
-        </div>
-
-        <!-- REGISTER FORM -->
-        <div id="form-register" class="hidden" role="tabpanel" aria-labelledby="tab-register">
-          <h2 class="auth-form-title">Get started free 🎉</h2>
-          <p class="auth-form-sub">Create your advertiser account</p>
-
-          <form class="auth-form" id="registerForm" novalidate>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="reg-name">Full Name</label>
-                <div class="input-with-icon">
-                  <span class="input-icon" aria-hidden="true">👤</span>
-                  <input class="form-control" type="text" id="reg-name" placeholder="Jane Smith" autocomplete="name" required>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="reg-company">Company</label>
-                <div class="input-with-icon">
-                  <span class="input-icon" aria-hidden="true">🏢</span>
-                  <input class="form-control" type="text" id="reg-company" placeholder="Acme Corp" autocomplete="organization">
-                </div>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="reg-email">Email Address</label>
-              <div class="input-with-icon">
-                <span class="input-icon" aria-hidden="true">✉️</span>
-                <input class="form-control" type="email" id="reg-email" placeholder="you@company.com" autocomplete="email" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="reg-password">Password</label>
-              <div class="input-with-icon">
-                <span class="input-icon" aria-hidden="true">🔒</span>
-                <input class="form-control" type="password" id="reg-password" placeholder="Min. 6 characters" autocomplete="new-password" required>
-                <button type="button" class="toggle-password" onclick="togglePwd('reg-password')" aria-label="Toggle password visibility">👁</button>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="reg-confirm">Confirm Password</label>
-              <div class="input-with-icon">
-                <span class="input-icon" aria-hidden="true">🔑</span>
-                <input class="form-control" type="password" id="reg-confirm" placeholder="Repeat password" autocomplete="new-password" required>
-              </div>
-            </div>
-
-            <button type="submit" class="auth-submit-btn" id="registerSubmitBtn">Create Account →</button>
-          </form>
-
-          <!-- Google Sign-In -->
-          <div class="oauth-divider">or</div>
-          <button type="button" class="google-signin-btn" id="googleSignInBtnRegister" onclick="handleGoogleSignIn()">
-            <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20">
-              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-              <path fill="none" d="M0 0h48v48H0z"/>
-            </svg>
-            <div class="btn-spinner"></div>
-            <span>Continue with Google</span>
-          </button>
+        <!-- Admin portal link -->
+        <div class="demo-hint" style="margin-top:12px; background:rgba(244,63,94,0.06); border-color:rgba(244,63,94,0.2);">
+          <p>🛡️ Are you an administrator?</p>
+          <p style="margin-top:6px;"><a href="admin-login.html" style="color:#f43f5e; font-weight:600;">Go to Admin Portal →</a></p>
         </div>
       </div>
     </section>
@@ -220,94 +126,13 @@
   <script src="js/storage.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/notifications.js"></script>
-  <script src="js/google-auth.js"></script>
+  <script src="js/clerk-auth.js"></script>
   <script>
     initDB();
-
-    // Redirect if already logged in
-    const session = getSession();
-    if (session) {
-      window.location.href = session.role === 'admin' ? 'admin.html' : 'dashboard.html';
-    }
-
-    function switchTab(tab) {
-      document.getElementById('form-login').classList.toggle('hidden', tab !== 'login');
-      document.getElementById('form-register').classList.toggle('hidden', tab !== 'register');
-      document.getElementById('tab-login').classList.toggle('active', tab === 'login');
-      document.getElementById('tab-register').classList.toggle('active', tab === 'register');
-      document.getElementById('tab-login').setAttribute('aria-selected', tab === 'login');
-      document.getElementById('tab-register').setAttribute('aria-selected', tab === 'register');
-    }
-
-    function togglePwd(inputId) {
-      const inp = document.getElementById(inputId);
-      inp.type = inp.type === 'password' ? 'text' : 'password';
-    }
-
-
-
-    function setLoading(btnId, loading) {
-      const btn = document.getElementById(btnId);
-      if (loading) {
-        btn.disabled = true;
-        btn.textContent = 'Please wait...';
-      } else {
-        btn.disabled = false;
-        btn.textContent = btnId === 'loginSubmitBtn' ? 'Sign In →' : 'Create Account →';
-      }
-    }
-
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const email    = document.getElementById('login-email').value.trim();
-      const password = document.getElementById('login-password').value;
-
-      if (!email || !password) { showToast('Please fill in all fields.', 'warning'); return; }
-
-      setLoading('loginSubmitBtn', true);
-      setTimeout(() => {
-        const result = loginUser(email, password);
-        if (result.success) {
-          // If admin, redirect them to the dedicated admin login
-          if (result.user.role === 'admin') {
-            clearSession();
-            showToast('Admins must use the admin portal to sign in.', 'warning');
-            setTimeout(() => { window.location.href = 'admin-login.html'; }, 1200);
-            return;
-          }
-          showToast('Welcome back, ' + result.user.name + '!', 'success');
-          setTimeout(() => {
-            window.location.href = 'dashboard.html';
-          }, 600);
-        } else {
-          showToast(result.message, 'error');
-          setLoading('loginSubmitBtn', false);
-        }
-      }, 500);
-    });
-
-    document.getElementById('registerForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const name     = document.getElementById('reg-name').value.trim();
-      const company  = document.getElementById('reg-company').value.trim();
-      const email    = document.getElementById('reg-email').value.trim();
-      const password = document.getElementById('reg-password').value;
-      const confirm  = document.getElementById('reg-confirm').value;
-
-      if (!name || !email || !password || !confirm) { showToast('Please fill in all required fields.', 'warning'); return; }
-      if (password !== confirm) { showToast('Passwords do not match.', 'error'); return; }
-
-      setLoading('registerSubmitBtn', true);
-      setTimeout(() => {
-        const result = registerUser(name, email, password, company);
-        if (result.success) {
-          showToast('Account created! Redirecting...', 'success');
-          setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
-        } else {
-          showToast(result.message, 'error');
-          setLoading('registerSubmitBtn', false);
-        }
-      }, 600);
+    // Clerk handles auth; initClerkSignIn() mounts components and redirects if
+    // already signed in. It runs after the Clerk script loads via the load event.
+    window.addEventListener('load', function() {
+      initClerkSignIn();
     });
   </script>
 </body>
