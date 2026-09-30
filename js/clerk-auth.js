@@ -85,6 +85,20 @@ async function initClerkSignIn() {
     clerk.mountSignUp(signUpEl, { appearance: darkAppearance, afterSignUpUrl: 'dashboard.html' });
   }
 
+  // Remove any dynamic phone number fields injected by Clerk
+  var removePhoneFields = function() {
+    var phoneInputs = document.querySelectorAll('input[type="tel"], input[name*="phone"], .cl-phoneInput, [data-field*="phone"]');
+    phoneInputs.forEach(function(el) {
+      var container = el.closest('.cl-formField') || el.closest('.cl-formFieldRow') || el.parentElement;
+      if (container) container.style.display = 'none';
+    });
+  };
+
+  removePhoneFields();
+  var observer = new MutationObserver(removePhoneFields);
+  if (signUpEl) observer.observe(signUpEl, { childList: true, subtree: true });
+  if (signInEl) observer.observe(signInEl, { childList: true, subtree: true });
+
   // Keep local session in sync as auth state changes
   clerk.addListener(function(resources) {
     if (resources.user) syncClerkToSession(resources.user);

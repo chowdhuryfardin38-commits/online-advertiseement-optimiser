@@ -488,3 +488,22 @@
 .cl-dividerText {
   color: #6b7280 !important;
 }
+
+/* ═══════════════════════════════════════════
+   HIDE PHONE NUMBER FIELD IN CLERK AUTH
+═══════════════════════════════════════════ */
+.cl-formField[data-field="phoneNumber"],
+.cl-formField[data-field="phone_number"],
+.cl-formFieldRow:has(input[type="tel"]),
+.cl-formField:has(input[type="tel"]),
+.cl-formField:has(input[name="phoneNumber"]),
+.cl-formField:has(input[name="phone_number"]),
+.cl-formField:has(.cl-phoneInput),
+.cl-phoneInput,
+.cl-phoneNumberField,
+.cl-formFieldInput__phoneNumber,
+.cl-formFieldInput__phone_number,
+div[class*="phoneNumber"],
+div[class*="phoneInput"] {
+  display: none !important;
+}
