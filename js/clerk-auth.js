@@ -62,11 +62,27 @@ async function initClerkSignIn() {
   var signInEl  = document.getElementById('clerk-sign-in');
   var signUpEl  = document.getElementById('clerk-sign-up');
 
+  var darkAppearance = {
+    elements: {
+      card: 'clerk-dark-card',
+      headerTitle: 'clerk-dark-title',
+      headerSubtitle: 'clerk-dark-sub',
+      socialButtonsBlockButton: 'clerk-dark-social-btn',
+      socialButtonsBlockButtonText: 'clerk-dark-social-text',
+      formFieldLabel: 'clerk-dark-label',
+      formFieldInput: 'clerk-dark-input',
+      formButtonPrimary: 'clerk-dark-primary-btn',
+      footerActionLink: 'clerk-dark-link',
+      dividerLine: 'clerk-dark-divider',
+      dividerText: 'clerk-dark-divider-text'
+    }
+  };
+
   if (signInEl) {
-    clerk.mountSignIn(signInEl, { afterSignInUrl: 'dashboard.html' });
+    clerk.mountSignIn(signInEl, { appearance: darkAppearance, afterSignInUrl: 'dashboard.html' });
   }
   if (signUpEl) {
-    clerk.mountSignUp(signUpEl, { afterSignUpUrl: 'dashboard.html' });
+    clerk.mountSignUp(signUpEl, { appearance: darkAppearance, afterSignUpUrl: 'dashboard.html' });
   }
 
   // Keep local session in sync as auth state changes
